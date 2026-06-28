@@ -13,40 +13,10 @@ This use case diagram describes the main functions of the PathToGrad system. The
 | Academic Staff   | Maintains course and curriculum information.                  |
 | LLM Service      | Supports the system in generating study plan recommendations. |
 
-## PlantUML Diagram
+## Use Case Diagram
 
-```plantuml
-@startuml
-left to right direction
+<img width="1436" height="704" alt="image" src="https://github.com/user-attachments/assets/6ef2f29f-b6d0-4050-8221-1703478d24cd" />
 
-actor Student
-actor "Academic Advisor" as Advisor
-actor "Academic Staff" as Staff
-actor "LLM Service" as LLM
-
-rectangle "PathToGrad System" {
-  usecase "Generate Study Plan" as UC1
-  usecase "Check Prerequisites" as UC2
-  usecase "Track Graduation Progress" as UC3
-  usecase "Review Student Plan" as UC4
-  usecase "Maintain Curriculum Data" as UC5
-}
-
-Student --> UC1
-Student --> UC2
-Student --> UC3
-
-Advisor --> UC4
-Advisor --> UC3
-
-Staff --> UC5
-
-UC1 ..> UC2 : <<include>>
-UC1 ..> UC3 : <<include>>
-UC1 ..> LLM : uses
-
-@enduml
-```
 
 ## Explanation
 
