@@ -1,71 +1,71 @@
-# UC03 - Track Graduation Progress
+# U003 - Generate Study Plan
 
-## Use Case Name
+## 1. Use Case Information
 
-Track Graduation Progress
+| Field                           | Description                                                      |
+| ------------------------------- | ---------------------------------------------------------------- |
+| Use Case ID                     | U003                                                             |
+| Use Case Name                   | Generate Study Plan                                              |
+| Primary Actor                   | Student                                                          |
+| Supporting Actor                | LLM Provider                                                     |
+| Related Functional Requirements | FR-03 to FR-14, FR-17                                            |
+| Related Feature                 | LLM Planning Agent, Study Plan Generator, Fallback Planning Mode |
 
-## Primary Actor
+## 2. Brief Description
 
-Student
+This use case allows students to request a recommended semester plan. The LLM Planning Agent receives the request, calls internal tools, checks academic rules, and returns a study plan with explanations and warnings.
 
-## Supporting Actor
+## 3. Pre-Condition
 
-Academic Advisor
+* The student profile is available in the system.
+* The student academic record is available in the system.
+* Course catalog data is available in MySQL.
 
-## Goal
+## 4. Result
 
-Allow a student to monitor their graduation progress by comparing completed courses with program requirements.
+* The system returns a recommended study plan.
+* The plan includes prerequisite status, graduation progress, academic risks, and explanation.
 
-## Preconditions
+## 5. Main Scenario
 
-- The student's completed course list is available.
-- The curriculum and graduation requirements are available.
-- Credit requirements are defined in the system.
+1. The student opens the study planning page.
+2. The student enters a planning request, such as target credit load or preferred semester.
+3. The system sends the request to the LLM Planning Agent.
+4. The LLM Planning Agent reads the student profile and academic record.
+5. The agent calls the Course Catalog Tool to retrieve course data.
+6. The agent calls the Prerequisite Checker Tool to check course eligibility.
+7. The agent calls the Graduation Progress Tracker to calculate completed and missing requirements.
+8. The agent calls the Semester Plan Generator to create a recommended plan.
+9. The agent calls the Academic Risk Detector to identify possible academic risks.
+10. The system returns the recommended study plan.
+11. The system explains why each course is recommended and shows warnings if needed.
 
-## Trigger
+## 6. Alternative Scenarios
 
-The student opens the graduation progress tracking feature.
+### A1. Missing academic record
 
-## Main Flow
+1. The student requests a study plan without entering academic records.
+2. The system shows a warning message.
+3. The student is asked to complete academic record information first.
 
-1. The student opens the graduation progress page.
-2. The system retrieves the student's completed courses.
-3. The system retrieves the program requirements.
-4. The system calculates completed credits and remaining credits.
-5. The system identifies completed, in-progress, and missing requirements.
-6. The system displays the graduation progress summary.
-7. The student reviews the remaining requirements.
-8. The student may use the result to update their study plan.
+### A2. Missing or uncertain course data
 
-## Alternative Flow
+1. The system cannot find enough course or prerequisite data.
+2. The system shows a warning that the recommendation is based on limited data.
+3. The system returns only the verified parts of the plan.
 
-### A1 - Completed course data is incomplete
+### A3. LLM provider unavailable
 
-1. The system detects missing or incomplete course history.
-2. The system asks the student to update the missing information.
-3. The system recalculates graduation progress after the update.
+1. The LLM provider fails or does not respond.
+2. The system switches to fallback planning mode.
+3. The rule-based tools generate a study plan.
+4. The system provides template-based explanations instead of AI-generated explanations.
 
-### A2 - Advisor reviews progress
+## 7. Non-Functional Constraints
 
-1. The academic advisor opens the student's progress summary.
-2. The advisor checks whether the student is on track.
-3. The advisor gives recommendations if needed.
+- The system should verify LLM-generated recommendations using rule-based tools.
+- The system should continue core planning functions when the LLM provider is unavailable.
+- The system should log important agent actions and tool calls for traceability.
+- The system should present planning results in clear and simple language.
 
-## Postconditions
 
-- The student can see current graduation progress.
-- Remaining requirements are clearly listed.
-- The result can support study plan generation.
-
-## Business Rules
-
-- Graduation progress must be calculated from official curriculum requirements.
-- Completed credits must match approved course records.
-- Missing data must be shown as incomplete instead of being assumed.
-
-## Related Functional Requirements
-
-- Track completed courses.
-- Calculate completed and remaining credits.
-- Display graduation progress.
-- Support advisor review.
