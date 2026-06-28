@@ -1,73 +1,57 @@
-# UC01 - Generate Study Plan
+# U001 - Manage Profile
 
-## Use Case Name
+## 1. Use Case Information
 
-Generate Study Plan
+| Field                          | Description                |
+| ------------------------------ | -------------------------- |
+| Use Case ID                    | U001                       |
+| Use Case Name                  | Manage Profile             |
+| Actor                          | Student                    |
+| Related Functional Requirement | FR-01                      |
+| Related Feature                | Student Profile Management |
 
-## Primary Actor
+## 2. Brief Description
 
-Student
+This use case allows students to create and update their academic profile. The profile includes major, intake year, current semester, and target credit load. The system uses this information for course planning.
 
-## Supporting Actor
+## 3. Pre-Condition
 
-LLM Service
+* The student has opened the PathToGrad system.
+* The student has access to the profile page.
 
-## Goal
+## 4. Result
 
-Allow a student to generate a suggested semester-by-semester study plan based on their completed courses, remaining courses, prerequisites, and graduation requirements.
+* The student profile is saved.
+* The profile can be used by the LLM Planning Agent and internal planning tools.
 
-## Preconditions
+## 5. Main Scenario
 
-- The student has entered or uploaded their academic information.
-- Curriculum data and prerequisite rules are available in the system.
-- The system has access to the course list and graduation requirements.
+1. The student opens the profile page.
+2. The system displays the profile form.
+3. The student enters major, intake year, current semester, and target credit load.
+4. The student submits the form.
+5. The system validates the input data.
+6. The system saves the student profile.
+7. The system shows a success message.
 
-## Trigger
+## 6. Alternative Scenarios
 
-The student selects the option to generate a study plan.
+### A1. Missing required information
 
-## Main Flow
+1. The student leaves a required field empty.
+2. The system shows an error message.
+3. The student corrects the missing information.
+4. The student submits the form again.
 
-1. The student opens the study planning feature.
-2. The system asks for required information, such as completed courses, current semester, target graduation time, and preferred course load.
-3. The student submits the information.
-4. The system checks completed and remaining courses.
-5. The system checks prerequisite rules.
-6. The LLM Service generates a suggested study plan.
-7. The system validates the plan using rule-based prerequisite checking.
-8. The system displays the suggested plan to the student.
-9. The student reviews and edits the plan if needed.
-10. The system saves the final plan.
+### A2. Invalid target credit load
 
-## Alternative Flow
+1. The student enters an invalid target credit load.
+2. The system shows an error message.
+3. The student edits the value.
+4. The student submits the form again.
 
-### A1 - Missing student information
+## 7. Non-Functional Constraints
 
-1. The system detects missing academic information.
-2. The system asks the student to complete the missing fields.
-3. The student updates the information.
-4. The use case continues from Step 4.
-
-### A2 - LLM Service is unavailable
-
-1. The system detects that the LLM Service is unavailable.
-2. The system generates a basic plan using rule-based logic.
-3. The system informs the student that the plan may have limited explanation.
-
-## Postconditions
-
-- A study plan is generated and saved.
-- The student can view, edit, or submit the plan for advisor review.
-
-## Business Rules
-
-- A course cannot be planned before its prerequisite is completed.
-- The study plan must follow curriculum and graduation requirements.
-- The system must not rely only on LLM output for prerequisite validation.
-
-## Related Functional Requirements
-
-- Generate study plan.
-- Check prerequisite conflicts.
-- Track remaining courses.
-- Save and update study plan.
+- The system should present the profile form in clear and simple language.
+- The system should protect student academic information.
+- The system should restrict access based on user roles.
