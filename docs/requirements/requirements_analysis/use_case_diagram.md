@@ -2,16 +2,16 @@
 
 ## Overview
 
-This diagram describes the main interactions between users and the PathToGrad system. The system helps students create a study plan, check prerequisites, and track graduation progress. Academic advisors can review the student's plan and give feedback. Academic staff can maintain curriculum data.
+The use case diagram shows the main functions of the PathToGrad system. The system supports students in planning their study path, checking prerequisites, and tracking graduation progress. Academic advisors can review student plans, while academic staff maintain curriculum data.
 
 ## Actors
 
-| Actor | Description |
-|---|---|
-| Student | Main user who creates and manages a study plan. |
-| Academic Advisor | Reviews student plans and provides academic guidance. |
-| Academic Staff | Maintains course, prerequisite, and curriculum data. |
-| LLM Service | Supports study plan generation and explanation. |
+| Actor            | Description                                                   |
+| ---------------- | ------------------------------------------------------------- |
+| Student          | Uses the system to generate and manage a study plan.          |
+| Academic Advisor | Reviews student plans and provides academic guidance.         |
+| Academic Staff   | Updates and maintains curriculum and prerequisite data.       |
+| LLM Service      | Supports the system in generating study plan recommendations. |
 
 ## Use Case Diagram
 
@@ -28,21 +28,27 @@ flowchart LR
         UC3((Track Graduation Progress))
         UC4((Review Student Plan))
         UC5((Maintain Curriculum Data))
-        UC6((Explain Recommendation))
     end
 
-    Student --> UC1
-    Student --> UC2
-    Student --> UC3
-    Student --> UC6
+    Student --- UC1
+    Student --- UC2
+    Student --- UC3
 
-    Advisor --> UC4
-    Advisor --> UC3
+    Advisor --- UC4
+    Advisor --- UC3
 
-    Staff --> UC5
+    Staff --- UC5
 
-    UC1 --> UC2
-    UC1 --> UC3
-    UC1 --> UC6
-    UC1 -. uses .-> LLM
-    UC6 -. uses .-> LLM
+    UC1 -. uses .- LLM
+    UC1 -. includes .- UC2
+    UC1 -. includes .- UC3
+```
+
+## Explanation
+
+* The **Student** is the main actor of the system.
+* The student can generate a study plan, check prerequisites, and track graduation progress.
+* The **Academic Advisor** can review the student's study plan and check graduation progress.
+* The **Academic Staff** maintains curriculum data, including courses and prerequisite rules.
+* The **LLM Service** is used only to support study plan generation.
+* Prerequisite checking and graduation progress tracking are still validated by system rules and curriculum data.
