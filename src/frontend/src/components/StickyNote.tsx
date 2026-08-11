@@ -5,7 +5,7 @@ export interface StickyNoteProps {
   /** Rotation angle in degrees, e.g. -2 or 3, for a hand-pasted effect. */
   rotation?: number;
   className?: string;
-  as?: keyof JSX.IntrinsicElements;
+  as?: keyof React.JSX.IntrinsicElements;
 }
 
 /**
