@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
-import Header from './Header';
-import ChatPanel from './ChatPanel';
+import Header from '../components/Header';
+import ChatPanel from '../components/ChatPanel';
 
 type NavItem = { label: string; to: string };
 

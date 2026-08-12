@@ -1,5 +1,5 @@
-import PlaceholderPage from './PlaceholderPage';
+import StudentDashboard from '../components/StudentDashboardPage';
 
-export default function CourseCatalogPage() {
-  return <PlaceholderPage title="Student Dashboard" owner="unassigned" />;
+export default function StudentDashboardPage() {
+  return <StudentDashboard />;
 }
