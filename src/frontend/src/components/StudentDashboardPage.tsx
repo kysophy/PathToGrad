@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import CourseCard from './CourseCard';
 import CourseModal from './CourseModal';
+import LinedRow from './LinedRow';
+import { getCourses, getRecommendedCourseNames, getAvailableCourseNames } from '../services/Course.ts';
 import type { Course } from '../services/Course';
 
 import starSparkleYellow from '../assets/Yellow Twinkles.svg';
 import starSparkleBlue from '../assets/Blue Stars.svg';
 import flowerLoop from '../assets/Small Orange Flower.svg';
+
 
 /**
  * StudentDashboard
@@ -14,48 +17,12 @@ import flowerLoop from '../assets/Small Orange Flower.svg';
  * <Outlet/> — it does not render the top header or the chat sidebar
  * itself, only the dashboard content (blue course panel + green
  * recommended-courses panel + the Frame 35 course detail modal).
+ *
+ * Course data comes from src/services/courses.ts, not from inline
+ * constants — the card grid maps over whatever getCourses() returns, so
+ * adding, removing, or fetching courses from a real API only requires
+ * changing that one file.
  */
-
-const COURSES: Course[] = [
-  {
-    id: 'MTH00015',
-    name: 'Computational Algebra',
-    credits: 4,
-    prerequisiteChain: ['Linear Algebra I', 'Linear Algebra II'],
-    status: 'Unavailable',
-    color: 'yellow',
-    openingClasses: [
-      { section: '24C10', instructor: 'Nguyen Van A', enrolled: 20, capacity: 45 },
-      { section: '24C07', instructor: 'Le Thi A', enrolled: 40, capacity: 45 },
-    ],
-    note: 'This course is currently unavailable for you!',
-  },
-  {
-    id: 'CSC00067',
-    name: 'DSA',
-    credits: 4,
-    prerequisiteChain: ['Programming Fundamentals'],
-    status: 'Can register',
-    color: 'pink',
-    openingClasses: [
-      { section: '24C03', instructor: 'Tran Van B', enrolled: 30, capacity: 50 },
-      { section: '24C04', instructor: 'Pham Thi C', enrolled: 18, capacity: 50 },
-    ],
-  },
-  {
-    id: 'MTH00007',
-    name: 'Linear Algebra II',
-    credits: 4,
-    prerequisiteChain: ['Linear Algebra I'],
-    status: 'Unavailable',
-    color: 'yellow',
-    openingClasses: [{ section: '24C02', instructor: 'Hoang Van D', enrolled: 45, capacity: 45 }],
-    note: 'This course is currently unavailable for you!',
-  },
-];
-
-const RECOMMENDED = ['DSA', 'Linear Algebra I', 'Introduction to Information Technology'];
-const AVAILABLE = ['DSA', 'Introduction to Information Technology'];
 
 /** Scattered sparkle positions inside the blue panel — percentages of the
  * panel's own box, purely decorative. */
@@ -73,6 +40,9 @@ const SPARKLES: { src: string; l: number; t: number; w: number }[] = [
 
 export default function StudentDashboard() {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const courses = getCourses();
+  const recommended = getRecommendedCourseNames();
+  const available = getAvailableCourseNames();
 
   return (
     <div className="flex flex-col gap-6 p-4 sm:p-6">
@@ -127,7 +97,7 @@ export default function StudentDashboard() {
         </div>
 
         <div className="relative z-10 mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {COURSES.map((course) => (
+          {courses.map((course) => (
             <CourseCard key={course.id} course={course} onSelect={setSelectedCourse} />
           ))}
         </div>
@@ -147,25 +117,17 @@ export default function StudentDashboard() {
           }}
         />
 
-        <div
-          className="flex-1 bg-[#67DE53] p-6 font-body text-neutral-900 sm:p-8"
-          style={{
-            backgroundImage:
-              'repeating-linear-gradient(to bottom, transparent, transparent 35px, rgba(0,0,0,0.5) 35px, rgba(0,0,0,0.5) 37px)',
-          }}
-        >
-          <p className="font-heading text-lg leading-[35px]">Recommended courses:</p>
-          {RECOMMENDED.map((c) => (
-            <p key={c} className="leading-[35px]">
-              {c}
-            </p>
+        <div className="flex-1 bg-[#67DE53] p-6 text-neutral-900 sm:p-8">
+          <LinedRow bold>Recommended courses:</LinedRow>
+          {recommended.map((c) => (
+            <LinedRow key={c}>{c}</LinedRow>
           ))}
 
-          <p className="mt-2 font-heading text-lg leading-[35px]">Available courses:</p>
-          {AVAILABLE.map((c) => (
-            <p key={c} className="leading-[35px]">
-              {c}
-            </p>
+          <LinedRow bold className="mt-2">
+            Available courses:
+          </LinedRow>
+          {available.map((c) => (
+            <LinedRow key={c}>{c}</LinedRow>
           ))}
         </div>
 

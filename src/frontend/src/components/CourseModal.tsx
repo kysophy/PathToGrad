@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import type { Course } from '../services/Course';
+import LinedRow from './LinedRow';
 
 type CourseModalProps = {
   course: Course | null;
@@ -37,11 +38,7 @@ export default function CourseModal({ course, onClose }: CourseModalProps) {
         aria-modal="true"
         aria-labelledby="course-modal-title"
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-md rounded-2xl bg-[#67DE53] p-6 font-body text-neutral-900 shadow-xl sm:p-8"
-        style={{
-          backgroundImage:
-            'repeating-linear-gradient(to bottom, transparent, transparent 35px, rgba(0,0,0,0.55) 35px, rgba(0,0,0,0.55) 37px)',
-        }}
+        className="relative w-full max-w-md rounded-2xl bg-[#67DE53] p-6 text-neutral-900 shadow-xl sm:p-8"
       >
         <button
           type="button"
@@ -59,25 +56,27 @@ export default function CourseModal({ course, onClose }: CourseModalProps) {
           {course.name} details
         </h2>
 
-        <div className="flex flex-col gap-1 pr-8">
-          <p className="font-heading text-lg leading-[35px]">Course information:</p>
-          <p className="leading-[35px]">Course name: {course.name}</p>
-          <p className="leading-[35px]">Course ID: {course.id}</p>
-          <p className="leading-[35px]">Credits: {course.credits}</p>
+        <div className="pr-8">
+          <LinedRow bold>Course information:</LinedRow>
+          <LinedRow>Course name: {course.name}</LinedRow>
+          <LinedRow>Course ID: {course.id}</LinedRow>
+          <LinedRow>Credits: {course.credits}</LinedRow>
 
-          <p className="mt-2 font-heading text-lg leading-[35px]">Opening classes:</p>
+          <LinedRow bold className="mt-2">
+            Opening classes:
+          </LinedRow>
           {course.openingClasses.map((oc) => (
-            <p key={oc.section} className="leading-[35px]">
+            <LinedRow key={oc.section}>
               {oc.section} - {oc.instructor} - {oc.enrolled}/{oc.capacity}
-            </p>
+            </LinedRow>
           ))}
-          {course.openingClasses.length === 0 && <p className="leading-[35px]">...</p>}
+          {course.openingClasses.length === 0 && <LinedRow>...</LinedRow>}
 
           {course.note && (
-            <p className="mt-2 leading-[35px]">
-              <span className="font-heading text-lg">Note: </span>
+            <LinedRow className="mt-2">
+              <span className="font-heading">Note: </span>
               {course.note}
-            </p>
+            </LinedRow>
           )}
         </div>
       </div>
