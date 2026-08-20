@@ -17,10 +17,10 @@ export type Course = {
 };
 
 /**
- * Mock course catalog. The dashboard grid and modal both read from this
+ * Mock course catalog. The catalog grid and modal both read from this
  * file rather than hardcoding data inline, so:
  *  - adding/removing a course here is the only change needed to update
- *    the grid — CourseCard/StudentDashboard just map over whatever this
+ *    the grid — CourseCard/CourseCatalog just map over whatever this
  *    returns, however many entries that is.
  *  - swapping this out for a real API call later (e.g. wiring up
  *    getCourses() to `fetch`/react-query) doesn't require touching any

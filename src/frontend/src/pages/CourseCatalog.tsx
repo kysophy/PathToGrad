@@ -1,5 +1,5 @@
-import PlaceholderPage from './PlaceholderPage';
+import CourseCatalog from '../components/CourseCatalogPage';
 
 export default function CourseCatalogPage() {
-  return <PlaceholderPage title="Course Catalog" owner="unassigned" />;
+  return <CourseCatalog />;
 }

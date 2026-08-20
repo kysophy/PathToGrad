@@ -18,7 +18,7 @@ export default function CourseCard({ course, onSelect }: CourseCardProps) {
     <button
       type="button"
       onClick={() => onSelect(course)}
-      className={`relative flex flex-col overflow-hidden rounded-[28px] p-5 text-left font-body ${BG_MAP[course.color]}`}
+      className={`relative flex w-[230px] shrink-0 snap-start flex-col overflow-hidden rounded-[28px] p-5 text-left font-body sm:w-[250px] ${BG_MAP[course.color]}`}
     >
       {course.color === 'yellow' && (
         <img
