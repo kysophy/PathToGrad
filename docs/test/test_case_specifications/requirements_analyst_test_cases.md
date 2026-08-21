@@ -72,5 +72,3 @@ Values that are not explicitly defined in the approved project documents are not
 ### 4.4 Decision-Table Testing
 
 Decision-table testing is used for prerequisite and course-eligibility validation because the result may depend on several conditions, including prerequisite status, course existence, course offering, academic term, and data completeness.
-
-
