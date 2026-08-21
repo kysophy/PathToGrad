@@ -1,20 +1,23 @@
 from fastapi import FastAPI
 
-from app.api import academic_record
-from app.api import meta
-from app.api import profile
+from app.api import (
+    academic_planning,
+    academic_record,
+    meta,
+    profile,
+)
 
 
 app = FastAPI(
     title="PathToGrad API",
-    version="0.1.0",
+    version="0.2.0",
 )
 
 @app.get("/")
 @app.get("/api/health")
 def health_check():
     return {
-        "status": "ok"
+        "status": "ok",
     }
 
 
@@ -29,3 +32,10 @@ app.include_router(
 app.include_router(
     academic_record.router
 )
+
+app.include_router(
+    academic_planning.router
+)
+
+
+
