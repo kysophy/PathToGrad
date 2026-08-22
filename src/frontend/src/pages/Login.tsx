@@ -38,7 +38,7 @@ export default function Login() {
 
     if (studentId === "test") {
       login({
-        id: "genie",
+        id: "pathtograd",
         name: "Test User",
         role: "Student",
       });
