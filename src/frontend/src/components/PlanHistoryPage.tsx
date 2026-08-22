@@ -24,21 +24,22 @@ import flowerPink from "../assets/FLower 1.svg";
 import flowerBlue from "../assets/Flower 2.svg";
 import tapeStrip from "../assets/Tape Piece.svg";
 
+ 
 // -----------------------------------------------------------------------
 // Small style helpers
 // -----------------------------------------------------------------------
-
+ 
 function cn(...classes: Array<string | false | undefined | null>): string {
   return classes.filter(Boolean).join(" ");
 }
-
+ 
 /** Faint graph-paper grid for the page background. */
 const notebookGridBackground: React.CSSProperties = {
   backgroundImage:
     "linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px)",
   backgroundSize: "22px 22px",
 };
-
+ 
 const statusStyles: Record<PlanVersionStatus, string> = {
   Draft: "bg-amber-100 text-amber-700",
   PendingReview: "bg-blue-100 text-blue-700",
@@ -46,7 +47,7 @@ const statusStyles: Record<PlanVersionStatus, string> = {
   RevisionRequested: "bg-red-100 text-red-700",
   Superseded: "bg-neutral-200 text-neutral-600",
 };
-
+ 
 const statusLabels: Record<PlanVersionStatus, string> = {
   Draft: "Draft",
   PendingReview: "Pending review",
@@ -54,7 +55,7 @@ const statusLabels: Record<PlanVersionStatus, string> = {
   RevisionRequested: "Revision requested",
   Superseded: "Superseded",
 };
-
+ 
 const sortOptions: Array<{ key: SortKey; label: string }> = [
   { key: "creationDate", label: "Creation date" },
   { key: "semester", label: "Semester" },
@@ -62,7 +63,7 @@ const sortOptions: Array<{ key: SortKey; label: string }> = [
   { key: "credits", label: "Credits" },
   { key: "status", label: "Status" },
 ];
-
+ 
 function formatDate(iso: string): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
@@ -70,7 +71,7 @@ function formatDate(iso: string): string {
   const mm = String(d.getMonth() + 1).padStart(2, "0");
   return `${dd}/${mm}/${d.getFullYear()}`;
 }
-
+ 
 function ChevronDownIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -87,7 +88,7 @@ function ChevronDownIcon({ className }: { className?: string }) {
     </svg>
   );
 }
-
+ 
 function ArrowRightIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -104,12 +105,12 @@ function ArrowRightIcon({ className }: { className?: string }) {
     </svg>
   );
 }
-
+ 
 // -----------------------------------------------------------------------
 // Component (frontend only — no fetching; the parent screen owns
 // data-fetching and passes props in, falling back to mock data)
 // -----------------------------------------------------------------------
-
+ 
 export default function PlanHistory({
   versions = MOCK_VERSIONS,
   selectedVersionId: selectedIdProp,
@@ -123,35 +124,35 @@ export default function PlanHistory({
     selectedIdProp,
   );
   const selectedVersionId = selectedIdProp ?? internalSelectedId;
-
+ 
   const [internalSortKey, setInternalSortKey] = useState<SortKey>(
     sortKeyProp ?? "creationDate",
   );
   const sortKey = sortKeyProp ?? internalSortKey;
-
+ 
   // Mobile master-detail toggle: which pane is visible below the `lg` breakpoint.
   const [mobilePane, setMobilePane] = useState<"list" | "detail">("list");
-
+ 
   function handleSelectVersion(versionId: string) {
     setInternalSelectedId(versionId);
     setMobilePane("detail");
     onSelectVersion?.(versionId);
   }
-
+ 
   function handleSortKeyChange(key: SortKey) {
     setInternalSortKey(key);
     onSortKeyChange?.(key);
   }
-
+ 
   // Falls back to the mock detail map keyed by the resolved selection so the
   // component still renders something meaningful without a parent wired up.
   const fallbackDetail: PlanVersionDetail | null = selectedVersionId
     ? MOCK_VERSION_DETAILS[selectedVersionId] ?? null
     : null;
   const versionDetail = versionDetailProp !== undefined ? versionDetailProp : fallbackDetail;
-
+ 
   const sortedVersions = useMemo(() => sortVersions(versions, sortKey), [versions, sortKey]);
-
+ 
   return (
     <div className="font-nunito relative w-full text-neutral-900" style={notebookGridBackground}>
       <div className="mx-auto flex max-w-6xl flex-col gap-6 p-4 sm:p-6 lg:p-8">
@@ -176,15 +177,15 @@ export default function PlanHistory({
                 className="mt-1 w-14 shrink-0 -rotate-6 select-none"
               />
             </header>
-
+ 
             <SortBar sortKey={sortKey} onChange={handleSortKeyChange} />
-
+ 
             <VersionList
               versions={sortedVersions}
               selectedVersionId={selectedVersionId}
               onSelect={handleSelectVersion}
             />
-
+ 
             {/* Decorative filler, mirrors the reference design's empty
                 space under a short list. Purely ornamental. */}
             <div className="mt-2 hidden items-end justify-between gap-4 sm:flex">
@@ -200,7 +201,7 @@ export default function PlanHistory({
               </div>
             </div>
           </section>
-
+ 
           {/* ---------------------------------------------------------
               Right pane — read-only detail for the selected version
           ---------------------------------------------------------- */}
@@ -218,7 +219,7 @@ export default function PlanHistory({
               <ArrowRightIcon className="w-4 rotate-180" />
               Back to versions
             </button>
-
+ 
             {isDetailLoading ? (
               <DetailSkeleton />
             ) : versionDetail ? (
@@ -232,11 +233,11 @@ export default function PlanHistory({
     </div>
   );
 }
-
+ 
 // -----------------------------------------------------------------------
 // Sub-components
 // -----------------------------------------------------------------------
-
+ 
 function sortVersions(versions: PlanVersionSummary[], sortKey: SortKey): PlanVersionSummary[] {
   const copy = [...versions];
   switch (sortKey) {
@@ -256,12 +257,12 @@ function sortVersions(versions: PlanVersionSummary[], sortKey: SortKey): PlanVer
       return copy;
   }
 }
-
+ 
 interface SortBarProps {
   sortKey: SortKey;
   onChange: (key: SortKey) => void;
 }
-
+ 
 function SortBar({ sortKey, onChange }: SortBarProps) {
   return (
     <div className="flex flex-col gap-2">
@@ -291,13 +292,13 @@ function SortBar({ sortKey, onChange }: SortBarProps) {
     </div>
   );
 }
-
+ 
 interface VersionListProps {
   versions: PlanVersionSummary[];
   selectedVersionId?: string;
   onSelect: (versionId: string) => void;
 }
-
+ 
 function VersionList({ versions, selectedVersionId, onSelect }: VersionListProps) {
   if (versions.length === 0) {
     return (
@@ -306,7 +307,7 @@ function VersionList({ versions, selectedVersionId, onSelect }: VersionListProps
       </p>
     );
   }
-
+ 
   return (
     <ol className="font-nunito flex flex-col divide-y divide-black/10">
       {versions.map((version) => {
@@ -347,7 +348,7 @@ function VersionList({ versions, selectedVersionId, onSelect }: VersionListProps
                   </span>
                 </div>
               </div>
-
+ 
               <div className="flex shrink-0 flex-col items-end gap-2">
                 <span className="text-xs text-neutral-600">
                   Generated {formatDate(version.createdAt)}
@@ -363,7 +364,7 @@ function VersionList({ versions, selectedVersionId, onSelect }: VersionListProps
     </ol>
   );
 }
-
+ 
 function EmptyDetailState() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-4 rounded-2xl bg-white/60 p-10 text-center ring-1 ring-black/5">
@@ -381,7 +382,7 @@ function EmptyDetailState() {
     </div>
   );
 }
-
+ 
 function DetailSkeleton() {
   return (
     <div className="flex flex-1 animate-pulse flex-col gap-4 rounded-2xl bg-white p-6 ring-1 ring-black/5">
@@ -392,20 +393,20 @@ function DetailSkeleton() {
     </div>
   );
 }
-
+ 
 interface VersionDetailPanelProps {
   detail: PlanVersionDetail;
 }
-
+ 
 function VersionDetailPanel({ detail }: VersionDetailPanelProps) {
   // Advisor feedback only renders for versions that actually went through
   // review — matches the "Approved" / "RevisionRequested" data contract.
   const showFeedback =
     (detail.status === "Approved" || detail.status === "RevisionRequested") &&
     detail.feedback;
-
+ 
   const totalCredits = detail.courses.reduce((sum, c) => sum + c.credits, 0);
-
+ 
   return (
     <div className="flex flex-1 flex-col">
       {/* Main read-only plan card */}
@@ -426,7 +427,7 @@ function VersionDetailPanel({ detail }: VersionDetailPanelProps) {
             {statusLabels[detail.status]}
           </span>
         </div>
-
+ 
         <ul className="font-nunito flex flex-col divide-y divide-neutral-200">
           {detail.courses.map((course) => (
             <li
@@ -442,19 +443,27 @@ function VersionDetailPanel({ detail }: VersionDetailPanelProps) {
           ))}
         </ul>
       </section>
-
+ 
       {/* Advisor feedback — a hand-written sticky note that overlaps the
           card above via negative margin + rotation, staying in normal
           document flow rather than using absolute positioning. */}
       {showFeedback && detail.feedback && (
-        <div className="-mt-6 ml-6 max-w-md self-start sm:ml-10">
-          {/* Note first, tape second: later-in-flow siblings paint over
-              earlier ones, so the tape renders in front of the note. The
-              tape is pulled up onto the note's top edge with a negative
-              margin, so it still overlaps without any absolute positioning. */}
+        <div className="-mt-6 ml-6 flex max-w-md flex-col self-start sm:ml-10">
+          {/* Tape sits above the note and straddles its top border: the
+              column stretches the note to full width while the tape
+              self-centers, and a negative bottom margin on the tape pulls
+              the note up underneath it. `relative z-10` on the tape (a
+              positioned element) makes it paint in front of the note
+              (which stays static) — all without absolute positioning. */}
+          <img
+            src={tapeStrip}
+            alt=""
+            aria-hidden="true"
+            className="relative z-10 -mb-4 w-14 self-center rotate-2 pointer-events-none select-none"
+          />
           <div
             className={cn(
-              "font-patrick-hand relative flex flex-col gap-2 rounded-md p-5 text-lg text-neutral-900 shadow-lg",
+              "font-patrick-hand flex flex-col gap-2 rounded-md p-5 text-lg text-neutral-900 shadow-lg",
               detail.status === "RevisionRequested" ? "bg-[#FADCE0]" : "bg-[#7ADB6E]",
               "rotate-1",
             )}
@@ -467,12 +476,6 @@ function VersionDetailPanel({ detail }: VersionDetailPanelProps) {
               {detail.feedback.advisorName} · {formatDate(detail.feedback.decisionDate)}
             </p>
           </div>
-          <img
-            src={tapeStrip}
-            alt=""
-            aria-hidden="true"
-            className="relative z-10 -mt-6 ml-4 w-12 -translate-y-2 rotate-3 pointer-events-none select-none"
-          />
         </div>
       )}
     </div>
