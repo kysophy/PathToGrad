@@ -1,1 +1,7 @@
-a
+fastapi
+uvicorn[standard]
+sqlalchemy
+pymysql
+python-dotenv
+pytest
+httpx
