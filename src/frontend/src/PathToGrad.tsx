@@ -10,6 +10,7 @@ import AdvisorDashboardPage from './pages/AdvisorDashboard';
 import CourseCatalogPage from './pages/CourseCatalog';
 import StudyPlanPage from './pages/StudyPlan';
 import PlanHistoryPage from './pages/PlanHistory';
+import Profile from './pages/Profile';
 const queryClient = new QueryClient();
 
 export default function PathToGrad() {
@@ -29,7 +30,7 @@ export default function PathToGrad() {
                 <Route path="/course-catalog" element={<CourseCatalogPage />} />
                 <Route path="/study-plan" element={<StudyPlanPage />} />
                 <Route path="/plan-history" element={<PlanHistoryPage />} />
-
+                <Route path="/profile" element={<Profile />} />
               </Route>
             </Route>
 
