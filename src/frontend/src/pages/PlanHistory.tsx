@@ -1,5 +1,5 @@
-import PlaceholderPage from './PlaceholderPage';
+import PlanHistory from '../components/PlanHistoryPage';
 
 export default function PlanHistoryPage() {
-  return <PlaceholderPage title="Plan History" owner="unassigned" />;
+  return <PlanHistory />;
 }
