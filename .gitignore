@@ -29,6 +29,9 @@ replay_pid*
 node_modules/
 dist/
 dist-ssr/
+.next/
+build/
+coverage/
 
 # python
 __pycache__/
