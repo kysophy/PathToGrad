@@ -1,7 +1,7 @@
 import { apiRequest } from './api';
 import {
-  DEMO_STUDENT_ID,
-} from './Profile';
+  CURRENT_STUDENT_ID,
+} from './session';
 
 
 export type CourseOption = {
@@ -84,7 +84,7 @@ export function getTerms() {
 
 export function getAcademicRecord() {
   return apiRequest<AcademicRecord>(
-    `/api/students/${DEMO_STUDENT_ID}/academic-record`,
+    `/api/students/${CURRENT_STUDENT_ID}/academic-record`,
   );
 }
 
@@ -93,7 +93,7 @@ export function addAttempt(
   data: AttemptCreate,
 ) {
   return apiRequest<AcademicRecord>(
-    `/api/students/${DEMO_STUDENT_ID}/academic-record/attempts`,
+    `/api/students/${CURRENT_STUDENT_ID}/academic-record/attempts`,
     {
       method: 'POST',
       body: JSON.stringify(data),

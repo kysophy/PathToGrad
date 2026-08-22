@@ -436,6 +436,12 @@ class AcademicPlanningService:
         offered = (
             offering is not None
         )
+        warnings = list(prerequisite_result.warnings)
+
+        if offering is not None and len(sections) == 0:
+            warnings.append(
+                "The course is offered, but no active class-section data is available."
+            )
 
         if (
             prerequisite_result.eligible
@@ -464,7 +470,5 @@ class AcademicPlanningService:
 
             sections=sections,
 
-            warnings=(
-                prerequisite_result.warnings
-            ),
+            warnings=warnings,
         )

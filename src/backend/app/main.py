@@ -5,6 +5,7 @@ from app.api import (
     academic_record,
     meta,
     profile,
+    course_catalog,
 )
 
 
@@ -37,5 +38,7 @@ app.include_router(
     academic_planning.router
 )
 
-
+app.include_router(
+    course_catalog.router
+)
 

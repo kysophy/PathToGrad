@@ -1,8 +1,6 @@
 import { apiRequest } from './api';
-
-
-export const DEMO_STUDENT_ID = 'TEST001';
-export const DEMO_USER_ID = 'USER-TEST-001';
+import { 
+CURRENT_STUDENT_ID, CURRENT_USER_ID } from './session';
 
 
 export type Faculty = {
@@ -97,7 +95,7 @@ export function getCurriculum(
 
 export function getProfile() {
   return apiRequest<ProfileResponse>(
-    `/api/students/${DEMO_STUDENT_ID}/profile`,
+    `/api/students/${CURRENT_STUDENT_ID}/profile`,
   );
 }
 
@@ -106,12 +104,12 @@ export function saveProfile(
   data: ProfileFormData,
 ) {
   return apiRequest<ProfileResponse>(
-    `/api/students/${DEMO_STUDENT_ID}/profile`,
+    `/api/students/${CURRENT_STUDENT_ID}/profile`,
     {
       method: 'PUT',
 
       body: JSON.stringify({
-        user_id: DEMO_USER_ID,
+        user_id: CURRENT_USER_ID,
         ...data,
       }),
     },

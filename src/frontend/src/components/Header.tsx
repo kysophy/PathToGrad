@@ -68,13 +68,25 @@ export default function Header({ navItems = DEFAULT_NAV }: HeaderProps) {
           <BellIcon className="h-5 w-5" />
         </button>
 
-        <button
-          type="button"
-          aria-label="Account"
-          className="flex h-7 w-7 items-center justify-center rounded-full bg-[#937FBD] text-white"
+        <NavLink
+          to="/profile"
+          aria-label="Profile"
+          className="
+            flex
+            h-7
+            w-7
+            items-center
+            justify-center
+            rounded-full
+            bg-[#937FBD]
+            text-white
+            hover:opacity-90
+          "
         >
-          <UserIcon className="h-4 w-4" />
-        </button>
+          <UserIcon
+            className="h-4 w-4"
+          />
+        </NavLink>
       </div>
     </header>
   );

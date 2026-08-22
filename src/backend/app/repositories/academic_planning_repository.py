@@ -38,30 +38,20 @@ class AcademicPlanningRepository:
         return db.execute(
             select(
                 Course.course_code,
-                Course.credits,
+                CourseAttempt.credits_earned.label("credits"),
             )
             .join(
                 CourseAttempt,
-                CourseAttempt.course_id
-                == Course.course_id,
+                CourseAttempt.course_id == Course.course_id,
             )
             .where(
-                CourseAttempt.record_id
-                == record_id,
-
-                CourseAttempt.result_status
-                == "Passed",
-
-                CourseAttempt.grade.is_not(
-                    None
-                ),
+                CourseAttempt.record_id == record_id,
+                CourseAttempt.result_status == "Passed",
+                CourseAttempt.grade.is_not(None),
             )
             .distinct()
-            .order_by(
-                Course.course_code
-            )
+            .order_by(Course.course_code)
         ).all()
-
 
     @staticmethod
     def get_required_core_courses(

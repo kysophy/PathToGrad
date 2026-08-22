@@ -91,22 +91,14 @@ def evaluate_attempts(
 
 
 def combine_prerequisites(
-    evaluations: Iterable[
-        PrerequisiteEvaluation
-    ],
+    evaluations: Iterable[PrerequisiteEvaluation],
 ) -> bool | None:
+    evaluation_list = list(evaluations)
 
-    evaluation_list = list(
-        evaluations
-    )
+    if any(item.satisfied is False for item in evaluation_list):
+        return False
 
-    if any(
-        item.satisfied is None
-        for item in evaluation_list
-    ):
+    if any(item.satisfied is None for item in evaluation_list):
         return None
 
-    return all(
-        item.satisfied is True
-        for item in evaluation_list
-    )
+    return True
