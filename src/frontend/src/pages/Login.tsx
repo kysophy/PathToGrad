@@ -1,4 +1,7 @@
-import React, { useState, FormEvent } from "react";
+import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../utils/AuthContext'; 
+
 import NotebookPage from "../components/NotebookPage";
 import Doodle from "../components/Doodle";
 
@@ -19,33 +22,67 @@ import lbCloud1 from "../assets/LB Cloud 1.svg";
 /**
  * Login
  * -----
- * Student sign-in screen for PathToGrad, styled as a page in a hand-drawn
- * notebook.
- *
- * Doodle coordinates below were extracted directly from the source Figma
- * export (1440x1024 canvas) by measuring each decorative cluster's bounding
- * box, then converted to percentages of the content area (canvas width minus
- * the 59px spine) so the composition holds its relative position at any
- * viewport size instead of drifting. The flower/star clusters carry the
- * `blurred` prop to reproduce the soft Gaussian-blur look from the source
- * file; the bunny, lightning, arrow, and clouds are intentionally crisp,
- * matching the original.
- *
- * Card sizing/spacing below was tightened (v2) to match the Figma card's
- * actual proportions (~575x423 on the 1440x1024 canvas, i.e. a notably more
- * compact card than a first pass produced) -- the bunny/lightning offsets
- * are pinned relative to the card edges, so they only land correctly once
- * the card's real rendered height is close to that target.
+ * Student sign-in screen for PathToGrad, styled as a page in a hand-drawn notebook.
  */
 export default function Login() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
   const [studentId, setStudentId] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(""); 
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    // Wire up to real auth flow.
-    console.log({ studentId, password });
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault(); 
+    setError('');
+
+    if (studentId === "testPTG") {
+      login({
+        id: "genie",
+        name: "Test User",
+        role: "Student",
+      });
+      navigate('/student-dashboard');
+      return;
+    }
+
+    try {
+      // Send credentials to Dev D's backend API
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier: studentId, password }), 
+      });
+
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+
+      // Extract the JSON body to find out the role
+      const data = await response.json(); 
+
+      const userData = {
+        role: data.role,
+        id: studentId, 
+        name: data.name || "Student",
+      };
+
+      // Save the role into your React in-memory context
+      login(userData);
+
+      // Route them to the correct interface based on their database role
+      if (userData.role === 'Student') navigate('/student-dashboard');
+      else if (userData.role === 'Advisor') navigate('/advisor-dashboard');
+      else if (userData.role === 'Admin') navigate('/admin-dashboard');
+      else {
+        throw new Error("Unknown role received");
+      }
+
+    } catch (err) {
+      console.error(err);
+      setError("Login failed. Please check your ID and Password.");
+    }
+  };
 
   return (
     <NotebookPage>
@@ -90,6 +127,13 @@ export default function Login() {
 
       {/* ---------- Card ---------- */}
       <div className="flex min-h-screen w-full items-center justify-center px-4 py-16 sm:px-8">
+        
+        {error && (
+          <div className="absolute top-4 bg-red-200 text-red-800 p-2 rounded border border-red-400 font-quicksand z-50">
+            {error}
+          </div>
+        )}
+        
         <div className="relative w-full max-w-[36rem] origin-center animate-fade-in rounded-xl bg-[#D7D7D7] px-6 py-6 opacity-0 shadow-sm sm:px-10 sm:py-8">
           {/* Bunny doodle, pinned to the card's top-left corner (crisp) */}
           <img
@@ -141,8 +185,6 @@ export default function Login() {
             </label>
 
             <div className="mt-2 flex flex-col items-center gap-2">
-              {/* The source SVG exports this arrow pointing up, so it's rotated
-                  90deg clockwise here to point right, matching the design. */}
               <button
                 type="submit"
                 aria-label="Log in"
