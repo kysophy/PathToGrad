@@ -36,7 +36,7 @@ export default function Login() {
     e.preventDefault(); 
     setError('');
 
-    if (studentId === "testPTG") {
+    if (studentId === "test") {
       login({
         id: "genie",
         name: "Test User",
