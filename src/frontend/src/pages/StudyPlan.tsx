@@ -1,5 +1,5 @@
-import PlaceholderPage from './PlaceholderPage';
+import StudyPlan from '../components/StudyPlanPage';
 
-export default function CourseCatalogPage() {
-  return <PlaceholderPage title="Study Plan" owner="unassigned" />;
+export default function StudyPlanPage() {
+ return <StudyPlan />;
 }
