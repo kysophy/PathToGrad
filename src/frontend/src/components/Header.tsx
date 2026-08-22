@@ -27,10 +27,11 @@ type HeaderProps = {
 
 const DEFAULT_NAV: NavItem[] = [
   { label: 'Student Dashboard', to: '/student-dashboard' },
+  { label: 'Course Catalog', to: '/course-catalog' },
+  { label: 'Study Plan', to: '/study-plan' },
+  { label: 'Plan History', to: '/plan-history' },
   { label: 'Profile', to: '/profile' },
   { label: 'Academic Record', to: '/academic-record' },
-  { label: 'Course Catalog', to: '/course' },
-  { label: 'Study Plan', to: '/study-plan' },
 ];
 
 export default function Header({ navItems = DEFAULT_NAV }: HeaderProps) {

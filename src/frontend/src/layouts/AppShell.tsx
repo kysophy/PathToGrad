@@ -11,26 +11,27 @@ type AppShellProps = {
   navItems?: NavItem[];
 };
 
-/**
- * AppShell
- * -----------------------------------------------------------------------
- * Top-level layout: header + routed page content on the left, a
- * persistent ChatPanel docked on the right. Mount this once, above your
- * routes, e.g.:
- *
- *   <Route element={<AppShell />}>
- *     <Route path="/student-dashboard" element={<StudentDashboard />} />
- *   </Route>
- *
- * Because ChatPanel is a sibling of <Outlet/> here rather than part of
- * any individual route, it never unmounts on navigation — its input
- * draft, message history, and scroll position all persist automatically.
- */
+const defaultStudentLinks: NavItem[] = [
+    { label: 'Dashboard', to: '/student-dashboard' },
+    { label: 'Course Catalog', to: '/course-catalog' },
+    { label: 'Study Plan', to: '/study-plan' },
+    { label: 'Plan History', to: '/plan-history' },
+    { label: 'Profile', to: '/profile' },
+    { label: 'Academic Record', to: '/academic-record' },
+  ];
+
 export default function AppShell({ navItems }: AppShellProps) {
+  
+  // Create a variable that falls back to the defaults if navItems is not provided
+  const activeLinks = navItems || defaultStudentLinks;
+
   return (
     <div className="flex h-screen w-full overflow-hidden bg-white">
       <div className="flex min-w-0 flex-1 flex-col">
-        <Header navItems={navItems} />
+        
+        {/* Pass the new activeLinks variable here! */}
+        <Header navItems={activeLinks} />
+        
         <main className="min-h-0 flex-1 overflow-y-auto">
           <Outlet />
         </main>

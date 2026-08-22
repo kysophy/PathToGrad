@@ -30,6 +30,10 @@ node_modules/
 dist/
 dist-ssr/
 
+# python
+__pycache__/
+*.pyc
+
 # env or smth
 .env
 .env.local

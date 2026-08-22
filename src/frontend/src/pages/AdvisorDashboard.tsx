@@ -1,5 +1,5 @@
 import PlaceholderPage from './PlaceholderPage';
 
-export default function CourseCatalogPage() {
+export default function AdvisorDashboardPage() {
   return <PlaceholderPage title="Advisor Dashboard" owner="unassigned" />;
 }
