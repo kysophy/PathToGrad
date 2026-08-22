@@ -5,6 +5,9 @@ USE pathtograd;
 ============================================================
 SYNTHETIC DEVELOPMENT / TEST DATA ONLY
 These values are NOT claimed to be official university data.
+
+Apply AFTER: alembic upgrade head
+Do not apply fixtures/academic_planning_test_data.sql on a demo database.
 ============================================================
 */
 
@@ -39,12 +42,25 @@ VALUES (
 
 INSERT IGNORE INTO program_track (
     track_id,
-    name
+    name,
+    min_credits_per_term,
+    max_credits_per_term,
+    min_courses,
+    max_courses
 )
 VALUES (
     'TRACK-STD-001',
-    'Standard'
+    'CLC',
+    14,
+    24,
+    4,
+    6
 );
+
+-- INSERT IGNORE will not rename a row that already exists.
+UPDATE program_track
+SET name = 'CLC'
+WHERE track_id = 'TRACK-STD-001';
 
 
 INSERT IGNORE INTO academic_program (
@@ -61,6 +77,8 @@ VALUES (
 );
 
 
+-- Demo SE curriculum. required_credits is sum(max(mandatory, 14)) over
+-- semesters 1–9 of GEN+SE from PathToGrad/data/Courses.csv (= 138).
 INSERT IGNORE INTO curriculum (
     curriculum_id,
     program_id,
@@ -71,44 +89,40 @@ VALUES (
     'CURR-TEST-2024',
     'PROG-TEST-001',
     'TEST-2024',
-    120
-);
-
-
-/*
-Only intake 2024 is mapped.
-Use another intake such as 2023 to exercise TC-04.
-*/
-INSERT IGNORE INTO curriculum_applicability (
-    curriculum_id,
-    intake_year
-)
-VALUES (
-    'CURR-TEST-2024',
-    2024
+    138
 );
 
 
 /*
 Synthetic academic terms used only for development/testing.
-They are not official university semester dates.
+Cadence (T=8 for 2026.1) is not stored on this table.
 */
 INSERT IGNORE INTO academic_term (
     term_id,
     name,
     start_date,
-    end_date
+    end_date,
+    term_type
 )
 VALUES
+(
+    'TERM-2026-1',
+    '2026.1',
+    '2026-09-01',
+    '2027-01-15',
+    'Semester1'
+),
 (
     'TERM-TEST-A',
     'Test Term A',
     '2026-01-01',
-    '2026-06-30'
+    '2026-06-30',
+    'Semester1'
 ),
 (
     'TERM-TEST-B',
     'Test Term B',
     '2026-07-01',
-    '2026-12-31'
+    '2026-12-31',
+    'Semester2'
 );

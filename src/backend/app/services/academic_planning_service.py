@@ -5,29 +5,24 @@ from app.deterministic.graduation_progress import (
     CompletedCourse,
     calculate_graduation_progress,
 )
-
 from app.deterministic.prerequisite_checker import (
     AttemptSnapshot,
     combine_prerequisites,
     evaluate_attempts,
 )
-
-from app.repositories.academic_planning_repository import (
-    AcademicPlanningRepository,
-)
-
-from app.repositories.profile_repository import (
-    ProfileRepository,
-)
-
+from app.repositories.attempt_repository import AttemptRepository
+from app.repositories.course_repository import CourseRepository
+from app.repositories.curriculum_repository import CurriculumRepository
+from app.repositories.offering_repository import OfferingRepository
+from app.repositories.student_repository import StudentRepository
 from app.schemas.academic_planning import (
     CourseEligibilityResponse,
-    GraduationProgressResponse,
     MeetingResponse,
     PrerequisiteCheckResponse,
     PrerequisiteItemResponse,
     SectionResponse,
 )
+from app.schemas.tools import GraduationProgress
 
 
 class AcademicPlanningService:
@@ -36,28 +31,17 @@ class AcademicPlanningService:
     def get_graduation_progress(
         db: Session,
         student_id: str,
-    ) -> GraduationProgressResponse:
+    ) -> GraduationProgress:
 
-        profile = ProfileRepository.get_profile(
-            db,
-            student_id,
-        )
+        profile = StudentRepository(db).get_with_policy(student_id)
 
         if profile is None:
             raise HTTPException(
                 status_code=404,
-                detail=(
-                    "Student profile does not exist."
-                ),
+                detail="Student profile does not exist.",
             )
 
-        curriculum = (
-            ProfileRepository.find_curriculum(
-                db,
-                profile.program_id,
-                profile.intake_year,
-            )
-        )
+        curriculum = profile.curriculum
 
         if curriculum is None:
             raise HTTPException(
@@ -69,35 +53,20 @@ class AcademicPlanningService:
                 ),
             )
 
-        record = (
-            AcademicPlanningRepository.get_record(
-                db,
-                student_id,
-            )
-        )
+        attempts = AttemptRepository(db)
+        record = attempts.get_record(student_id)
 
         if record is None:
             raise HTTPException(
                 status_code=404,
-                detail=(
-                    "Academic record does not exist."
-                ),
+                detail="Academic record does not exist.",
             )
 
-        passed_rows = (
-            AcademicPlanningRepository
-            .get_verified_passed_courses(
-                db,
-                record.record_id,
-            )
-        )
+        passed_rows = attempts.get_verified_passed_courses(record.record_id)
 
-        required_rows = (
-            AcademicPlanningRepository
-            .get_required_core_courses(
-                db,
-                curriculum.curriculum_id,
-            )
+        required_courses = CurriculumRepository(db).list_mandatory_courses(
+            curriculum.curriculum_id,
+            profile.spec_code,
         )
 
         completed_courses = [
@@ -109,64 +78,26 @@ class AcademicPlanningService:
         ]
 
         required_course_codes = [
-            row.course_code
-            for row in required_rows
+            course.course_code for course in required_courses
         ]
 
-        result = (
-            calculate_graduation_progress(
-                completed_courses=(
-                    completed_courses
-                ),
-                required_credits=(
-                    curriculum.required_credits
-                ),
-                required_course_codes=(
-                    required_course_codes
-                ),
-            )
+        result = calculate_graduation_progress(
+            completed_courses=completed_courses,
+            required_credits=curriculum.required_credits,
+            required_course_codes=required_course_codes,
         )
 
-        return GraduationProgressResponse(
+        return GraduationProgress(
             student_id=student_id,
-
-            curriculum_id=(
-                curriculum.curriculum_id
-            ),
-
-            required_credits=(
-                result.required_credits
-            ),
-
-            earned_credits=(
-                result.earned_credits
-            ),
-
-            remaining_credits=(
-                result.remaining_credits
-            ),
-
-            credit_requirement_met=(
-                result.credit_requirement_met
-            ),
-
-            completed_required_courses=(
-                result.completed_required_courses
-            ),
-
-            missing_required_courses=(
-                result.missing_required_courses
-            ),
-
-            completed=(
-                result.completed
-            ),
-
-            progress_percentage=(
-                result.progress_percentage
-            ),
+            earned_credits=result.earned_credits,
+            required_credits=result.required_credits,
+            remaining_credits=result.remaining_credits,
+            mandatory_passed=len(result.missing_required_courses) == 0,
+            credit_requirement_met=result.credit_requirement_met,
+            missing_required_courses=result.missing_required_courses,
+            gpa=None,
+            completed=result.completed,
         )
-
 
     @staticmethod
     def check_prerequisites(
@@ -175,149 +106,84 @@ class AcademicPlanningService:
         course_code: str,
     ) -> PrerequisiteCheckResponse:
 
-        course = (
-            AcademicPlanningRepository
-            .get_course_by_code(
-                db,
-                course_code,
-            )
-        )
+        courses = CourseRepository(db)
+        attempts_repo = AttemptRepository(db)
+
+        course = courses.get_by_code(course_code)
 
         if course is None:
             raise HTTPException(
                 status_code=404,
-                detail=(
-                    f"Course {course_code} "
-                    "does not exist."
-                ),
+                detail=f"Course {course_code} does not exist.",
             )
 
-        record = (
-            AcademicPlanningRepository
-            .get_record(
-                db,
-                student_id,
-            )
-        )
+        record = attempts_repo.get_record(student_id)
 
         if record is None:
             raise HTTPException(
                 status_code=404,
-                detail=(
-                    "Academic record does not exist."
-                ),
+                detail="Academic record does not exist.",
             )
 
-        prerequisite_rows = (
-            AcademicPlanningRepository
-            .get_prerequisite_courses(
-                db,
-                course.course_id,
-            )
-        )
+        prerequisite_courses = courses.get_prerequisites(course.course_id)
 
-        if not prerequisite_rows:
+        if not prerequisite_courses:
             return PrerequisiteCheckResponse(
                 course_code=course_code,
-
                 eligible=True,
-
                 prerequisites=[],
-
                 warnings=[],
             )
 
-        items: list[
-            PrerequisiteItemResponse
-        ] = []
-
+        items: list[PrerequisiteItemResponse] = []
         evaluations = []
-
         warnings: list[str] = []
 
-        for row in prerequisite_rows:
-
-            attempts = (
-                AcademicPlanningRepository
-                .get_attempts_for_course(
-                    db,
-                    record.record_id,
-                    row.course_id,
-                )
+        for required in prerequisite_courses:
+            attempts = attempts_repo.list_for_course(
+                record.record_id,
+                required.course_id,
             )
 
             evaluation = evaluate_attempts(
                 AttemptSnapshot(
-                    attempt_number=(
-                        attempt.attempt_number
-                    ),
-
-                    result_status=(
-                        attempt.result_status
-                    ),
-
+                    attempt_number=attempt.attempt_number,
+                    result_status=attempt.result_status,
                     grade=(
                         float(attempt.grade)
-                        if attempt.grade
-                        is not None
+                        if attempt.grade is not None
                         else None
                     ),
                 )
                 for attempt in attempts
             )
 
-            evaluations.append(
-                evaluation
-            )
+            evaluations.append(evaluation)
 
-            item_warning = (
-                evaluation.warning
-            )
+            item_warning = evaluation.warning
 
             if item_warning:
-                warnings.append(
-                    f"{row.course_code}: "
-                    f"{item_warning}"
-                )
+                warnings.append(f"{required.course_code}: {item_warning}")
 
             items.append(
                 PrerequisiteItemResponse(
-                    course_code=(
-                        row.course_code
-                    ),
-
-                    course_name=(
-                        row.course_name
-                    ),
-
-                    status=(
-                        evaluation.status
-                    ),
-
-                    satisfied=(
-                        evaluation.satisfied
-                    ),
-
-                    warning=(
-                        item_warning
-                    ),
+                    course_code=required.course_code,
+                    name_vi=required.name_vi,
+                    name_en=required.name_en,
+                    status=evaluation.status,
+                    satisfied=evaluation.satisfied,
+                    warning=item_warning,
                 )
             )
 
-        eligible = combine_prerequisites(
-            evaluations
-        )
+        eligible = combine_prerequisites(evaluations)
 
         return PrerequisiteCheckResponse(
             course_code=course_code,
-
             eligible=eligible,
-
             prerequisites=items,
-
             warnings=warnings,
         )
-
 
     @staticmethod
     def get_course_eligibility(
@@ -327,115 +193,53 @@ class AcademicPlanningService:
         term_id: str,
     ) -> CourseEligibilityResponse:
 
-        prerequisite_result = (
-            AcademicPlanningService
-            .check_prerequisites(
-                db,
-                student_id,
-                course_code,
-            )
+        prerequisite_result = AcademicPlanningService.check_prerequisites(
+            db,
+            student_id,
+            course_code,
         )
 
-        course = (
-            AcademicPlanningRepository
-            .get_course_by_code(
-                db,
-                course_code,
-            )
-        )
+        courses = CourseRepository(db)
+        offerings = OfferingRepository(db)
 
-        term = (
-            AcademicPlanningRepository
-            .get_term(
-                db,
-                term_id,
-            )
-        )
+        course = courses.get_by_code(course_code)
+        term = offerings.get_term(term_id)
 
         if term is None:
             raise HTTPException(
                 status_code=404,
-                detail=(
-                    f"Academic term "
-                    f"{term_id} "
-                    f"does not exist."
-                ),
+                detail=f"Academic term {term_id} does not exist.",
             )
 
-        offering = (
-            AcademicPlanningRepository
-            .get_active_offering(
-                db,
-                course.course_id,
-                term_id,
-            )
-        )
+        offering = offerings.get_active_offering(course.course_id, term_id)
 
-        sections: list[
-            SectionResponse
-        ] = []
+        sections: list[SectionResponse] = []
 
         if offering is not None:
-
-            section_rows = (
-                AcademicPlanningRepository
-                .get_active_sections(
-                    db,
-                    offering.offering_id,
-                )
-            )
-
-            for section in section_rows:
-
-                meeting_rows = (
-                    AcademicPlanningRepository
-                    .get_meetings(
-                        db,
-                        section.section_id,
-                    )
-                )
-
+            for section in offerings.list_sections_with_meetings(
+                offering.offering_id
+            ):
                 meetings = [
                     MeetingResponse(
-                        day_of_week=(
-                            meeting.day_of_week
-                        ),
-
-                        start_time=(
-                            meeting.start_time
-                            .strftime("%H:%M")
-                        ),
-
-                        end_time=(
-                            meeting.end_time
-                            .strftime("%H:%M")
-                        ),
+                        meeting_type=meeting.meeting_type,
+                        day_of_week=meeting.day_of_week,
+                        start_time=meeting.start_time.strftime("%H:%M"),
+                        end_time=meeting.end_time.strftime("%H:%M"),
+                        room=meeting.room,
                     )
-                    for meeting
-                    in meeting_rows
+                    for meeting in section.meetings
                 ]
 
                 sections.append(
                     SectionResponse(
-                        section_id=(
-                            section.section_id
-                        ),
-
-                        section_code=(
-                            section.section_code
-                        ),
-
-                        capacity=(
-                            section.capacity
-                        ),
-
+                        section_id=section.section_id,
+                        section_code=section.section_code,
+                        capacity=section.capacity,
                         meetings=meetings,
                     )
                 )
 
-        offered = (
-            offering is not None
-        )
+        offered = offering is not None
         warnings = list(prerequisite_result.warnings)
 
         if offering is not None and len(sections) == 0:
@@ -443,32 +247,17 @@ class AcademicPlanningService:
                 "The course is offered, but no active class-section data is available."
             )
 
-        if (
-            prerequisite_result.eligible
-            is None
-        ):
+        if prerequisite_result.eligible is None:
             eligible: bool | None = None
-
         else:
-            eligible = (
-                prerequisite_result.eligible
-                and offered
-            )
+            eligible = prerequisite_result.eligible and offered
 
         return CourseEligibilityResponse(
             course_code=course_code,
-
             term_id=term_id,
-
-            prerequisite_eligible=(
-                prerequisite_result.eligible
-            ),
-
+            prerequisite_eligible=prerequisite_result.eligible,
             offered=offered,
-
             eligible=eligible,
-
             sections=sections,
-
             warnings=warnings,
         )

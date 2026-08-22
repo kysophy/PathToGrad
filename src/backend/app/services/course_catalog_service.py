@@ -1,13 +1,10 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from app.repositories.academic_planning_repository import (
-    AcademicPlanningRepository,
-)
-
 from app.repositories.course_catalog_repository import (
     CourseCatalogRepository,
 )
+from app.repositories.offering_repository import OfferingRepository
 
 from app.schemas.course_catalog import (
     CourseCatalogItemResponse,
@@ -27,13 +24,9 @@ class CourseCatalogService:
         term_id: str,
     ) -> list[CourseCatalogItemResponse]:
 
-        term = (
-            AcademicPlanningRepository
-            .get_term(
-                db,
-                term_id,
-            )
-        )
+        offerings = OfferingRepository(db)
+
+        term = offerings.get_term(term_id)
 
         if term is None:
             raise HTTPException(
@@ -66,13 +59,9 @@ class CourseCatalogService:
                 )
             )
 
-            offering = (
-                AcademicPlanningRepository
-                .get_active_offering(
-                    db,
-                    course.course_id,
-                    term_id,
-                )
+            offering = offerings.get_active_offering(
+                course.course_id,
+                term_id,
             )
 
             offered = (
@@ -104,7 +93,7 @@ class CourseCatalogService:
                     ),
 
                     course_name=(
-                        course.course_name
+                        course.name_en
                     ),
 
                     credits=(

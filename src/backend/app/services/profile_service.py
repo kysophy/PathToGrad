@@ -1,7 +1,8 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from app.repositories.profile_repository import ProfileRepository
+from app.repositories.curriculum_repository import CurriculumRepository
+from app.repositories.student_repository import StudentRepository
 from app.schemas.profile import ProfileResponse, ProfileUpsert
 
 
@@ -14,10 +15,10 @@ class ProfileService:
         data: ProfileUpsert,
     ) -> ProfileResponse:
 
-        user = ProfileRepository.get_user(
-            db,
-            data.user_id,
-        )
+        students = StudentRepository(db)
+        curricula = CurriculumRepository(db)
+
+        user = students.get_user(data.user_id)
 
         if user is None:
             raise HTTPException(
@@ -31,10 +32,7 @@ class ProfileService:
                 detail="The selected user is not a Student.",
             )
 
-        faculty = ProfileRepository.get_faculty(
-            db,
-            data.faculty_id,
-        )
+        faculty = curricula.get_faculty(data.faculty_id)
 
         if faculty is None:
             raise HTTPException(
@@ -42,10 +40,7 @@ class ProfileService:
                 detail="Faculty does not exist.",
             )
 
-        track = ProfileRepository.get_track(
-            db,
-            data.track_id,
-        )
+        track = curricula.get_track(data.track_id)
 
         if track is None:
             raise HTTPException(
@@ -53,10 +48,7 @@ class ProfileService:
                 detail="Program track does not exist.",
             )
 
-        program = ProfileRepository.get_program(
-            db,
-            data.program_id,
-        )
+        program = curricula.get_program(data.program_id)
 
         if program is None:
             raise HTTPException(
@@ -82,26 +74,31 @@ class ProfileService:
                 ),
             )
 
-        curriculum = ProfileRepository.find_curriculum(
-            db,
-            data.program_id,
-            data.intake_year,
-        )
+        if data.class_id is not None:
+            class_group = students.get_class_group(data.class_id)
+            if class_group is None:
+                raise HTTPException(
+                    status_code=422,
+                    detail="Class group does not exist.",
+                )
 
-        ProfileRepository.save_profile(
-            db,
+        curriculum = curricula.get_by_program(data.program_id)
+
+        students.save_profile(
             student_id=student_id,
             user_id=data.user_id,
             program_id=data.program_id,
             intake_year=data.intake_year,
             current_semester=data.current_semester,
             target_credit_load=data.target_credit_load,
+            spec_code=data.spec_code,
+            class_id=data.class_id,
+            curriculum_id=(
+                curriculum.curriculum_id if curriculum else None
+            ),
         )
 
-        ProfileRepository.ensure_academic_record(
-            db,
-            student_id,
-        )
+        students.ensure_academic_record(student_id)
 
         db.commit()
 
@@ -110,7 +107,7 @@ class ProfileService:
         if curriculum is None:
             warning = (
                 "No applicable curriculum was found for "
-                "the selected program and intake year. "
+                "the selected program. "
                 "The profile is saved but remains incomplete "
                 "for planning."
             )
@@ -118,36 +115,26 @@ class ProfileService:
         return ProfileResponse(
             student_id=student_id,
             user_id=data.user_id,
-
-            faculty_id=faculty.faculty_id,
-            faculty_name=faculty.name,
-
-            track_id=track.track_id,
-            track_name=track.name,
-
-            program_id=program.program_id,
-            program_name=program.name,
-
             intake_year=data.intake_year,
             current_semester=data.current_semester,
             target_credit_load=data.target_credit_load,
-
+            program_id=data.program_id,
+            spec_code=data.spec_code,
+            class_id=data.class_id,
             curriculum_id=(
-                curriculum.curriculum_id
-                if curriculum
-                else None
+                curriculum.curriculum_id if curriculum else None
             ),
-
+            faculty_id=faculty.faculty_id,
+            faculty_name=faculty.name,
+            track_id=track.track_id,
+            track_name=track.name,
+            program_name=program.name,
             curriculum_version=(
-                curriculum.version
-                if curriculum
-                else None
+                curriculum.version if curriculum else None
             ),
-
             is_complete=curriculum is not None,
             warning=warning,
         )
-
 
     @staticmethod
     def get(
@@ -155,10 +142,7 @@ class ProfileService:
         student_id: str,
     ) -> ProfileResponse:
 
-        profile = ProfileRepository.get_profile(
-            db,
-            student_id,
-        )
+        profile = StudentRepository(db).get_with_policy(student_id)
 
         if profile is None:
             raise HTTPException(
@@ -166,26 +150,10 @@ class ProfileService:
                 detail="Student profile does not exist.",
             )
 
-        program = ProfileRepository.get_program(
-            db,
-            profile.program_id,
-        )
-
-        faculty = ProfileRepository.get_faculty(
-            db,
-            program.faculty_id,
-        )
-
-        track = ProfileRepository.get_track(
-            db,
-            program.track_id,
-        )
-
-        curriculum = ProfileRepository.find_curriculum(
-            db,
-            profile.program_id,
-            profile.intake_year,
-        )
+        program = profile.program
+        faculty = program.faculty if program else None
+        track = program.track if program else None
+        curriculum = profile.curriculum
 
         warning = None
 
@@ -198,33 +166,21 @@ class ProfileService:
         return ProfileResponse(
             student_id=profile.student_id,
             user_id=profile.user_id,
-
-            faculty_id=faculty.faculty_id,
-            faculty_name=faculty.name,
-
-            track_id=track.track_id,
-            track_name=track.name,
-
-            program_id=program.program_id,
-            program_name=program.name,
-
             intake_year=profile.intake_year,
             current_semester=profile.current_semester,
             target_credit_load=profile.target_credit_load,
-
-            curriculum_id=(
-                curriculum.curriculum_id
-                if curriculum
-                else None
-            ),
-
+            program_id=profile.program_id,
+            spec_code=profile.spec_code,
+            class_id=profile.class_id,
+            curriculum_id=profile.curriculum_id,
+            faculty_id=faculty.faculty_id if faculty else None,
+            faculty_name=faculty.name if faculty else None,
+            track_id=track.track_id if track else None,
+            track_name=track.name if track else None,
+            program_name=program.name if program else None,
             curriculum_version=(
-                curriculum.version
-                if curriculum
-                else None
+                curriculum.version if curriculum else None
             ),
-
             is_complete=curriculum is not None,
             warning=warning,
         )
-

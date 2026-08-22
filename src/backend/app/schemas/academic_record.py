@@ -1,35 +1,24 @@
-
 from datetime import datetime
-from enum import Enum
 
 from pydantic import BaseModel, Field, model_validator
 
-
-class ResultStatus(str, Enum):
-    PASSED = "Passed"
-    FAILED = "Failed"
-    IN_PROGRESS = "InProgress"
+from app.schemas.enums import ResultStatus
 
 
 class CourseAttemptCreate(BaseModel):
     course_code: str
     term_id: str
 
-    attempt_number: int = Field(
-        ge=1,
-    )
+    attempt_number: int = Field(ge=1, le=2)
 
     grade: float | None = None
 
     result_status: ResultStatus
 
-    credits_earned: int = Field(
-        ge=0,
-    )
+    credits_earned: int = Field(ge=0)
 
     @model_validator(mode="after")
     def validate_attempt(self):
-
         if (
             self.result_status
             in {
@@ -62,7 +51,8 @@ class CourseAttemptResponse(BaseModel):
     attempt_id: str
 
     course_code: str
-    course_name: str
+    name_vi: str
+    name_en: str
 
     term_id: str
     term_name: str

@@ -1,7 +1,10 @@
 fastapi
 uvicorn[standard]
 sqlalchemy
+alembic
 pymysql
+cryptography
+pydantic-settings
 python-dotenv
 pytest
 httpx

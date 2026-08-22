@@ -1,10 +1,11 @@
-from datetime import datetime, time
+from __future__ import annotations
+
+from datetime import datetime
 from decimal import Decimal
 
 from sqlalchemy import (
-    Date,
+    CheckConstraint,
     DateTime,
-    Time,
     Enum,
     ForeignKey,
     Integer,
@@ -12,13 +13,20 @@ from sqlalchemy import (
     String,
     UniqueConstraint,
 )
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
+from app.schemas.enums import AccountStatus, ResultStatus, UserRole
+
+_enum_values = lambda cls: [item.value for item in cls]
 
 
 class User(Base):
     __tablename__ = "users"
+
+    __table_args__ = (
+        UniqueConstraint("email", name="uq_users_email"),
+    )
 
     user_id: Mapped[str] = mapped_column(String(36), primary_key=True)
     full_name: Mapped[str] = mapped_column(String(50), nullable=False)
@@ -26,54 +34,36 @@ class User(Base):
     password: Mapped[str] = mapped_column(String(255), nullable=False)
 
     role: Mapped[str] = mapped_column(
-        Enum("Student", "Advisor", "Admin"),
+        Enum(*_enum_values(UserRole), name="user_role"),
         nullable=False,
     )
 
     account_status: Mapped[str] = mapped_column(
-        Enum("Active", "Suspended"),
+        Enum(*_enum_values(AccountStatus), name="account_status"),
         nullable=False,
     )
 
-
-class Faculty(Base):
-    __tablename__ = "faculty"
-
-    faculty_id: Mapped[str] = mapped_column(String(36), primary_key=True)
-    name: Mapped[str] = mapped_column(String(255), nullable=False)
-
-
-class ProgramTrack(Base):
-    __tablename__ = "program_track"
-
-    track_id: Mapped[str] = mapped_column(String(36), primary_key=True)
-    name: Mapped[str] = mapped_column(String(255), nullable=False)
-
-
-class AcademicProgram(Base):
-    __tablename__ = "academic_program"
-
-    program_id: Mapped[str] = mapped_column(String(36), primary_key=True)
-
-    faculty_id: Mapped[str] = mapped_column(
-        ForeignKey("faculty.faculty_id"),
-        nullable=False,
+    student_profile: Mapped[StudentProfile | None] = relationship(
+        back_populates="user"
+    )
+    advised_classes: Mapped[list[ClassGroup]] = relationship(
+        back_populates="advisor"
     )
 
-    track_id: Mapped[str] = mapped_column(
-        ForeignKey("program_track.track_id"),
-        nullable=False,
+
+class ClassGroup(Base):
+    __tablename__ = "class_group"
+
+    __table_args__ = (
+        CheckConstraint("intake_year > 1900", name="chk_class_intake_year"),
     )
 
-    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    class_id: Mapped[str] = mapped_column(String(36), primary_key=True)
 
-
-class Curriculum(Base):
-    __tablename__ = "curriculum"
-
-    curriculum_id: Mapped[str] = mapped_column(
-        String(36),
-        primary_key=True,
+    class_code: Mapped[str] = mapped_column(
+        String(20),
+        nullable=False,
+        unique=True,
     )
 
     program_id: Mapped[str] = mapped_column(
@@ -81,31 +71,32 @@ class Curriculum(Base):
         nullable=False,
     )
 
-    version: Mapped[str] = mapped_column(String(50), nullable=False)
-    required_credits: Mapped[int] = mapped_column(Integer, nullable=False)
+    intake_year: Mapped[int] = mapped_column(Integer, nullable=False)
 
-
-class CurriculumApplicability(Base):
-    __tablename__ = "curriculum_applicability"
-
-    curriculum_id: Mapped[str] = mapped_column(
-        ForeignKey("curriculum.curriculum_id"),
-        primary_key=True,
+    advisor_user_id: Mapped[str] = mapped_column(
+        ForeignKey("users.user_id"),
+        nullable=False,
     )
 
-    intake_year: Mapped[int] = mapped_column(
-        Integer,
-        primary_key=True,
+    program: Mapped["AcademicProgram"] = relationship("AcademicProgram")
+    advisor: Mapped[User] = relationship(back_populates="advised_classes")
+    students: Mapped[list[StudentProfile]] = relationship(
+        back_populates="class_group"
     )
 
 
 class StudentProfile(Base):
     __tablename__ = "student_profile"
 
-    student_id: Mapped[str] = mapped_column(
-        String(20),
-        primary_key=True,
+    __table_args__ = (
+        CheckConstraint("intake_year > 1900", name="chk_intake_year"),
+        CheckConstraint(
+            "current_semester > 0",
+            name="chk_current_semester",
+        ),
     )
+
+    student_id: Mapped[str] = mapped_column(String(20), primary_key=True)
 
     user_id: Mapped[str] = mapped_column(
         ForeignKey("users.user_id"),
@@ -122,56 +113,33 @@ class StudentProfile(Base):
         nullable=True,
     )
 
+    spec_code: Mapped[str | None] = mapped_column(String(10), nullable=True)
 
-class Course(Base):
-    __tablename__ = "course"
-
-    course_id: Mapped[str] = mapped_column(
-        String(36),
-        primary_key=True,
+    class_id: Mapped[str | None] = mapped_column(
+        ForeignKey("class_group.class_id"),
+        nullable=True,
     )
 
-    course_code: Mapped[str] = mapped_column(
-        String(15),
-        nullable=False,
-        unique=True,
+    curriculum_id: Mapped[str | None] = mapped_column(
+        ForeignKey("curriculum.curriculum_id"),
+        nullable=True,
     )
 
-    course_name: Mapped[str] = mapped_column(
-        String(255),
-        nullable=False,
+    user: Mapped[User] = relationship(back_populates="student_profile")
+    program: Mapped["AcademicProgram | None"] = relationship("AcademicProgram")
+    class_group: Mapped[ClassGroup | None] = relationship(
+        back_populates="students"
     )
-
-    credits: Mapped[int] = mapped_column(Integer, nullable=False)
-
-    status: Mapped[str] = mapped_column(
-        Enum("Active", "Archived"),
-        nullable=False,
-        default="Active",
+    curriculum: Mapped["Curriculum | None"] = relationship("Curriculum")
+    academic_record: Mapped[AcademicRecord | None] = relationship(
+        back_populates="student"
     )
-
-
-class AcademicTerm(Base):
-    __tablename__ = "academic_term"
-
-    term_id: Mapped[str] = mapped_column(
-        String(36),
-        primary_key=True,
-    )
-
-    name: Mapped[str] = mapped_column(String(100), nullable=False)
-
-    start_date = mapped_column(Date, nullable=False)
-    end_date = mapped_column(Date, nullable=False)
 
 
 class AcademicRecord(Base):
     __tablename__ = "academic_record"
 
-    record_id: Mapped[str] = mapped_column(
-        String(36),
-        primary_key=True,
-    )
+    record_id: Mapped[str] = mapped_column(String(36), primary_key=True)
 
     student_id: Mapped[str] = mapped_column(
         ForeignKey("student_profile.student_id"),
@@ -185,6 +153,13 @@ class AcademicRecord(Base):
         default=datetime.utcnow,
     )
 
+    student: Mapped[StudentProfile] = relationship(
+        back_populates="academic_record"
+    )
+    attempts: Mapped[list[CourseAttempt]] = relationship(
+        back_populates="record"
+    )
+
 
 class CourseAttempt(Base):
     __tablename__ = "course_attempt"
@@ -196,12 +171,17 @@ class CourseAttempt(Base):
             "attempt_number",
             name="uq_course_attempt",
         ),
+        CheckConstraint(
+            "attempt_number IN (1, 2)",
+            name="chk_attempt_number",
+        ),
+        CheckConstraint(
+            "credits_earned >= 0",
+            name="chk_credits_earned",
+        ),
     )
 
-    attempt_id: Mapped[str] = mapped_column(
-        String(36),
-        primary_key=True,
-    )
+    attempt_id: Mapped[str] = mapped_column(String(36), primary_key=True)
 
     record_id: Mapped[str] = mapped_column(
         ForeignKey("academic_record.record_id"),
@@ -218,10 +198,7 @@ class CourseAttempt(Base):
         nullable=False,
     )
 
-    attempt_number: Mapped[int] = mapped_column(
-        Integer,
-        nullable=False,
-    )
+    attempt_number: Mapped[int] = mapped_column(Integer, nullable=False)
 
     grade: Mapped[Decimal | None] = mapped_column(
         Numeric(3, 1),
@@ -229,186 +206,12 @@ class CourseAttempt(Base):
     )
 
     result_status: Mapped[str] = mapped_column(
-        Enum("Passed", "Failed", "InProgress"),
+        Enum(*_enum_values(ResultStatus), name="result_status"),
         nullable=False,
     )
 
-    credits_earned: Mapped[int] = mapped_column(
-        Integer,
-        nullable=False,
-    )
+    credits_earned: Mapped[int] = mapped_column(Integer, nullable=False)
 
-class CurriculumCourse(Base):
-    __tablename__ = "curriculum_course"
-
-    __table_args__ = (
-        UniqueConstraint(
-            "curriculum_id",
-            "course_id",
-            name="uq_curriculum_course",
-        ),
-    )
-
-    curr_course_id: Mapped[str] = mapped_column(
-        String(36),
-        primary_key=True,
-    )
-
-    curriculum_id: Mapped[str] = mapped_column(
-        ForeignKey("curriculum.curriculum_id"),
-        nullable=False,
-    )
-
-    course_id: Mapped[str] = mapped_column(
-        ForeignKey("course.course_id"),
-        nullable=False,
-    )
-
-    requirement_type: Mapped[str] = mapped_column(
-        Enum("Core", "Elective"),
-        nullable=False,
-    )
-
-
-class Prerequisite(Base):
-    __tablename__ = "prerequisite"
-
-    __table_args__ = (
-        UniqueConstraint(
-            "course_id",
-            "required_course_id",
-            name="uq_prerequisite_rule",
-        ),
-    )
-
-    prereq_id: Mapped[int] = mapped_column(
-        Integer,
-        primary_key=True,
-        autoincrement=True,
-    )
-
-    course_id: Mapped[str] = mapped_column(
-        ForeignKey("course.course_id"),
-        nullable=False,
-    )
-
-    required_course_id: Mapped[str] = mapped_column(
-        ForeignKey("course.course_id"),
-        nullable=False,
-    )
-
-
-class CourseOffering(Base):
-    __tablename__ = "course_offering"
-
-    __table_args__ = (
-        UniqueConstraint(
-            "course_id",
-            "term_id",
-            name="uq_course_offering",
-        ),
-    )
-
-    offering_id: Mapped[str] = mapped_column(
-        String(36),
-        primary_key=True,
-    )
-
-    course_id: Mapped[str] = mapped_column(
-        ForeignKey("course.course_id"),
-        nullable=False,
-    )
-
-    term_id: Mapped[str] = mapped_column(
-        ForeignKey("academic_term.term_id"),
-        nullable=False,
-    )
-
-    status: Mapped[str] = mapped_column(
-        Enum(
-            "Active",
-            "Inactive",
-            "Archived",
-        ),
-        nullable=False,
-        default="Active",
-    )
-
-
-class ClassSection(Base):
-    __tablename__ = "class_section"
-
-    __table_args__ = (
-        UniqueConstraint(
-            "offering_id",
-            "section_code",
-            name="uq_section_code_per_offering",
-        ),
-    )
-
-    section_id: Mapped[str] = mapped_column(
-        String(36),
-        primary_key=True,
-    )
-
-    offering_id: Mapped[str] = mapped_column(
-        ForeignKey("course_offering.offering_id"),
-        nullable=False,
-    )
-
-    section_code: Mapped[str] = mapped_column(
-        String(20),
-        nullable=False,
-    )
-
-    capacity: Mapped[int] = mapped_column(
-        Integer,
-        nullable=False,
-    )
-
-    status: Mapped[str] = mapped_column(
-        Enum(
-            "Active",
-            "Inactive",
-            "Archived",
-        ),
-        nullable=False,
-        default="Active",
-    )
-
-
-class SectionMeeting(Base):
-    __tablename__ = "section_meeting"
-
-    meeting_id: Mapped[str] = mapped_column(
-        String(36),
-        primary_key=True,
-    )
-
-    section_id: Mapped[str] = mapped_column(
-        ForeignKey("class_section.section_id"),
-        nullable=False,
-    )
-
-    day_of_week: Mapped[str] = mapped_column(
-        Enum(
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday",
-            "Saturday",
-            "Sunday",
-        ),
-        nullable=False,
-    )
-
-    start_time: Mapped[time] = mapped_column(
-        Time,
-        nullable=False,
-    )
-
-    end_time: Mapped[time] = mapped_column(
-        Time,
-        nullable=False,
-    )
+    record: Mapped[AcademicRecord] = relationship(back_populates="attempts")
+    course: Mapped["Course"] = relationship("Course")
+    term: Mapped["AcademicTerm"] = relationship("AcademicTerm")

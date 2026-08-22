@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 
 /** Minimal inline icons — no icon package dependency. */
 function BellIcon({ className = '' }: { className?: string }) {
@@ -69,25 +69,13 @@ export default function Header({ navItems = DEFAULT_NAV }: HeaderProps) {
           <BellIcon className="h-5 w-5" />
         </button>
 
-        <NavLink
+        <Link
           to="/profile"
-          aria-label="Profile"
-          className="
-            flex
-            h-7
-            w-7
-            items-center
-            justify-center
-            rounded-full
-            bg-[#937FBD]
-            text-white
-            hover:opacity-90
-          "
+          aria-label="Account Profile"
+          className="flex h-7 w-7 items-center justify-center rounded-full bg-[#937FBD] text-white transition hover:scale-110"
         >
-          <UserIcon
-            className="h-4 w-4"
-          />
-        </NavLink>
+          <UserIcon className="h-4 w-4" />
+        </Link>
       </div>
     </header>
   );

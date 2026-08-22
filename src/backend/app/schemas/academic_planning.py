@@ -1,26 +1,10 @@
 from pydantic import BaseModel
 
 
-class GraduationProgressResponse(BaseModel):
-    student_id: str
-    curriculum_id: str
-
-    required_credits: int
-    earned_credits: int
-    remaining_credits: int
-
-    credit_requirement_met: bool
-
-    completed_required_courses: list[str]
-    missing_required_courses: list[str]
-
-    completed: bool
-    progress_percentage: float
-
-
 class PrerequisiteItemResponse(BaseModel):
     course_code: str
-    course_name: str
+    name_vi: str
+    name_en: str
 
     status: str
     satisfied: bool | None
@@ -39,9 +23,11 @@ class PrerequisiteCheckResponse(BaseModel):
 
 
 class MeetingResponse(BaseModel):
+    meeting_type: str
     day_of_week: str
     start_time: str
     end_time: str
+    room: str
 
 
 class SectionResponse(BaseModel):

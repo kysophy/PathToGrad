@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { AuthProvider } from './utils/AuthContext';
+import { ChatProvider } from './utils/ChatContext';
 import RoleGuard from './utils/RoleGuard';
 import Login from './pages/Login';
 import AppShell from './layouts/AppShell';
@@ -18,31 +19,33 @@ const queryClient = new QueryClient();
 export default function PathToGrad() {
   return (
     <AuthProvider>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <Routes>
-            {/* Public Route */}
-            <Route path="/" element={<Login />} />
+      <ChatProvider>
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <Routes>
+              {/* Public Route */}
+              <Route path="/" element={<Login />} />
 
-            {/* Protected Student Routes */}
-            <Route element={<RoleGuard allowedRole="Student" />}>
-              <Route element={<AppShell />}>
-                <Route path="/student-dashboard" element={<StudentDashboardPage />} />
-                <Route path="/course-catalog" element={<CourseCatalogPage />} />
-                <Route path="/study-plan" element={<StudyPlanPage />} />
-                <Route path="/plan-history" element={<PlanHistoryPage />} />
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/academic-record" element={<AcademicRecordPage />} />
+              {/* Protected Student Routes */}
+              <Route element={<RoleGuard allowedRole="Student" />}>
+                <Route element={<AppShell />}>
+                  <Route path="/student-dashboard" element={<StudentDashboardPage />} />
+                  <Route path="/course-catalog" element={<CourseCatalogPage />} />
+                  <Route path="/study-plan" element={<StudyPlanPage />} />
+                  <Route path="/plan-history" element={<PlanHistoryPage />} />
+                  <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/academic-record" element={<AcademicRecordPage />} />
+                </Route>
               </Route>
-            </Route>
 
-            {/* Protected Advisor Routes */}
-            <Route element={<RoleGuard allowedRole="Advisor" />}>
-              <Route path="/advisor-dashboard" element={<AdvisorDashboardPage />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </QueryClientProvider>
+              {/* Protected Advisor Routes */}
+              <Route element={<RoleGuard allowedRole="Advisor" />}>
+                <Route path="/advisor-dashboard" element={<AdvisorDashboardPage />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </QueryClientProvider>
+      </ChatProvider>
     </AuthProvider>
   );
 }

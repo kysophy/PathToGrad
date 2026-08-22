@@ -1,0 +1,32 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: pathtograd-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: pathtograd
+      MYSQL_DATABASE: pathtograd
+    ports:
+      - "3306:3306"
+    volumes:
+      - pathtograd-mysql:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -ppathtograd --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  adminer:
+    image: adminer
+    container_name: pathtograd-adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  pathtograd-mysql:

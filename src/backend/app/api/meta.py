@@ -1,17 +1,10 @@
 from fastapi import APIRouter, Depends
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models.academic import (
-    AcademicProgram,
-    AcademicTerm,
-    Course,
-    Curriculum,
-    CurriculumApplicability,
-    Faculty,
-    ProgramTrack,
-)
+from app.repositories.course_repository import CourseRepository
+from app.repositories.curriculum_repository import CurriculumRepository
+from app.repositories.offering_repository import OfferingRepository
 
 
 router = APIRouter(
@@ -24,15 +17,9 @@ router = APIRouter(
 def get_faculties(
     db: Session = Depends(get_db),
 ):
-    rows = db.scalars(
-        select(Faculty).order_by(Faculty.name)
-    ).all()
-
+    rows = CurriculumRepository(db).list_faculties()
     return [
-        {
-            "faculty_id": row.faculty_id,
-            "name": row.name,
-        }
+        {"faculty_id": row.faculty_id, "name": row.name}
         for row in rows
     ]
 
@@ -41,16 +28,15 @@ def get_faculties(
 def get_tracks(
     db: Session = Depends(get_db),
 ):
-    rows = db.scalars(
-        select(ProgramTrack).order_by(
-            ProgramTrack.name
-        )
-    ).all()
-
+    rows = CurriculumRepository(db).list_tracks()
     return [
         {
             "track_id": row.track_id,
             "name": row.name,
+            "min_credits_per_term": row.min_credits_per_term,
+            "max_credits_per_term": row.max_credits_per_term,
+            "min_courses": row.min_courses,
+            "max_courses": row.max_courses,
         }
         for row in rows
     ]
@@ -62,20 +48,9 @@ def get_programs(
     track_id: str,
     db: Session = Depends(get_db),
 ):
-    rows = db.scalars(
-        select(AcademicProgram)
-        .where(
-            AcademicProgram.faculty_id == faculty_id,
-            AcademicProgram.track_id == track_id,
-        )
-        .order_by(AcademicProgram.name)
-    ).all()
-
+    rows = CurriculumRepository(db).list_programs(faculty_id, track_id)
     return [
-        {
-            "program_id": row.program_id,
-            "name": row.name,
-        }
+        {"program_id": row.program_id, "name": row.name}
         for row in rows
     ]
 
@@ -86,31 +61,22 @@ def find_curriculum(
     intake_year: int,
     db: Session = Depends(get_db),
 ):
-    curriculum = db.scalar(
-        select(Curriculum)
-        .join(
-            CurriculumApplicability,
-            Curriculum.curriculum_id
-            == CurriculumApplicability.curriculum_id,
-        )
-        .where(
-            Curriculum.program_id == program_id,
-            CurriculumApplicability.intake_year
-            == intake_year,
-        )
-    )
+    curriculum = CurriculumRepository(db).get_by_program(program_id)
 
     if curriculum is None:
         return {
             "found": False,
             "curriculum_id": None,
             "version": None,
+            "intake_year": intake_year,
         }
 
     return {
         "found": True,
         "curriculum_id": curriculum.curriculum_id,
         "version": curriculum.version,
+        "required_credits": curriculum.required_credits,
+        "intake_year": intake_year,
     }
 
 
@@ -118,16 +84,12 @@ def find_curriculum(
 def get_courses(
     db: Session = Depends(get_db),
 ):
-    rows = db.scalars(
-        select(Course)
-        .where(Course.status == "Active")
-        .order_by(Course.course_code)
-    ).all()
-
+    rows = CourseRepository(db).list_active()
     return [
         {
             "course_code": row.course_code,
-            "course_name": row.course_name,
+            "name_vi": row.name_vi,
+            "name_en": row.name_en,
             "credits": row.credits,
         }
         for row in rows
@@ -138,15 +100,12 @@ def get_courses(
 def get_terms(
     db: Session = Depends(get_db),
 ):
-    rows = db.scalars(
-        select(AcademicTerm)
-        .order_by(AcademicTerm.name)
-    ).all()
-
+    rows = OfferingRepository(db).list_terms()
     return [
         {
             "term_id": row.term_id,
             "name": row.name,
+            "term_type": row.term_type,
         }
         for row in rows
     ]

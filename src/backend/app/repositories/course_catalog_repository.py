@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.models.academic import Course
+from app.models import Course
 
 
 class CourseCatalogRepository:

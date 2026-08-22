@@ -1,110 +1,48 @@
 USE pathtograd;
 
 -- ============================================================
--- SYNTHETIC ACADEMIC PLANNING TEST DATA
+-- OPTIONAL isolated test fixtures — DO NOT apply on a demo DB.
 --
--- This file exists only for reproducible software tests.
--- Prerequisite and offering relationships below are NOT
--- claimed to be official university data.
+-- After Track A data is loaded via:
+--   python -m app.scripts.import_courses
+-- this file would overwrite required_credits (138 → 6) and insert
+-- prerequisite edges that contradict data/Courses.csv
+-- (CSC10004 requires CSC10012, not CSC00004).
+--
+-- Keep it for standalone TC-13–TC-20 database tests only.
+-- Conflicting statements below are commented out so a mistaken
+-- source of this file cannot poison the demo curriculum.
 -- ============================================================
 
 
 -- ------------------------------------------------------------
 -- Compact graduation requirement used by TC-13 to TC-15.
---
--- The value 6 is synthetic. It is NOT an official HCMUS
--- graduation-credit requirement.
+-- Disabled: demo seed uses required_credits = 138 from Courses.csv.
 -- ------------------------------------------------------------
-
-UPDATE curriculum
-SET required_credits = 6
-WHERE curriculum_id = 'CURR-TEST-2024';
+-- UPDATE curriculum
+-- SET required_credits = 6
+-- WHERE curriculum_id = 'CURR-TEST-2024';
 
 
 -- ------------------------------------------------------------
 -- Required/Core courses used for graduation tests.
---
--- CSC00004 = 4 credits from Courses.csv
--- CSC10009 = 2 credits from Courses.csv
--- Total = 6 synthetic required credits
+-- Disabled: GEN+SE Core/Elective rows come from import_courses.py.
 -- ------------------------------------------------------------
-
-INSERT IGNORE INTO curriculum_course (
-    curr_course_id,
-    curriculum_id,
-    course_id,
-    requirement_type
-)
-SELECT
-    'CURRCOURSE-TEST-BASE',
-    'CURR-TEST-2024',
-    course_id,
-    'Core'
-FROM course
-WHERE course_code = 'CSC00004';
-
-
-INSERT IGNORE INTO curriculum_course (
-    curr_course_id,
-    curriculum_id,
-    course_id,
-    requirement_type
-)
-SELECT
-    'CURRCOURSE-TEST-SYSTEM',
-    'CURR-TEST-2024',
-    course_id,
-    'Core'
-FROM course
-WHERE course_code = 'CSC10009';
+-- INSERT IGNORE INTO curriculum_course ... CSC00004 / CSC10009
 
 
 -- ------------------------------------------------------------
--- Prerequisite fixture:
---
--- CSC10004 requires CSC00004.
---
--- This relationship is synthetic and exists only for
--- TC-17, TC-18 and TC-20.
+-- Prerequisite fixture (synthetic, contradicts the demo graph).
+-- Disabled.
+-- CSC10004 requires CSC00004  — demo: CSC10004 requires CSC10012
+-- CSC10003 requires MTH00058 — demo: CSC10003 requires CSC10004
 -- ------------------------------------------------------------
-
-INSERT IGNORE INTO prerequisite (
-    course_id,
-    required_course_id
-)
-SELECT
-    target.course_id,
-    required.course_id
-FROM course AS target
-CROSS JOIN course AS required
-WHERE target.course_code = 'CSC10004'
-  AND required.course_code = 'CSC00004';
+-- INSERT IGNORE INTO prerequisite ...
 
 
 -- ------------------------------------------------------------
--- Uncertain-data fixture:
---
--- CSC10003 requires MTH00058.
---
--- Used only for TC-19.
--- ------------------------------------------------------------
-
-INSERT IGNORE INTO prerequisite (
-    course_id,
-    required_course_id
-)
-SELECT
-    target.course_id,
-    required.course_id
-FROM course AS target
-CROSS JOIN course AS required
-WHERE target.course_code = 'CSC10003'
-  AND required.course_code = 'MTH00058';
-
-
--- ------------------------------------------------------------
--- Course offering fixture for TC-20.
--- CSC10004 is offered in TERM-TEST-B.
+-- Extra offering of CSC10004 in TERM-TEST-B (TC-20 Dataset A on
+-- the test term). Harmless alongside the 2026.1 demo offerings.
 -- ------------------------------------------------------------
 
 INSERT IGNORE INTO course_offering (

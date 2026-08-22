@@ -1,10 +1,10 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from app.repositories.academic_record_repository import (
-    AcademicRecordRepository,
-)
-from app.repositories.profile_repository import ProfileRepository
+from app.repositories.attempt_repository import AttemptRepository
+from app.repositories.course_repository import CourseRepository
+from app.repositories.offering_repository import OfferingRepository
+from app.repositories.student_repository import StudentRepository
 from app.schemas.academic_record import (
     AcademicRecordResponse,
     CourseAttemptCreate,
@@ -19,12 +19,7 @@ class AcademicRecordService:
         db: Session,
         record,
     ):
-        rows = (
-            AcademicRecordRepository.get_attempt_rows(
-                db,
-                record.record_id,
-            )
-        )
+        rows = AttemptRepository(db).get_attempt_rows(record.record_id)
 
         attempts = []
         earned_credits = 0
@@ -34,30 +29,23 @@ class AcademicRecordService:
 
             if attempt.result_status == "Passed":
                 earned_credits += attempt.credits_earned
-                passed_courses.append(
-                    course.course_code
-                )
+                passed_courses.append(course.course_code)
 
             attempts.append(
                 CourseAttemptResponse(
                     attempt_id=attempt.attempt_id,
-
                     course_code=course.course_code,
-                    course_name=course.course_name,
-
+                    name_vi=course.name_vi,
+                    name_en=course.name_en,
                     term_id=term.term_id,
                     term_name=term.name,
-
                     attempt_number=attempt.attempt_number,
-
                     grade=(
                         float(attempt.grade)
                         if attempt.grade is not None
                         else None
                     ),
-
                     result_status=attempt.result_status,
-
                     credits_earned=attempt.credits_earned,
                 )
             )
@@ -66,24 +54,20 @@ class AcademicRecordService:
             record_id=record.record_id,
             student_id=record.student_id,
             updated_at=record.updated_at,
-
             earned_credits=earned_credits,
             passed_courses=passed_courses,
-
             attempts=attempts,
         )
-
 
     @staticmethod
     def get(
         db: Session,
         student_id: str,
     ):
+        students = StudentRepository(db)
+        attempts = AttemptRepository(db)
 
-        profile = ProfileRepository.get_profile(
-            db,
-            student_id,
-        )
+        profile = students.get_profile(student_id)
 
         if profile is None:
             raise HTTPException(
@@ -94,26 +78,13 @@ class AcademicRecordService:
                 ),
             )
 
-        record = AcademicRecordRepository.get_record(
-            db,
-            student_id,
-        )
+        record = attempts.get_record(student_id)
 
         if record is None:
-            record = (
-                ProfileRepository.ensure_academic_record(
-                    db,
-                    student_id,
-                )
-            )
-
+            record = students.ensure_academic_record(student_id)
             db.commit()
 
-        return AcademicRecordService._build_response(
-            db,
-            record,
-        )
-
+        return AcademicRecordService._build_response(db, record)
 
     @staticmethod
     def add_attempt(
@@ -121,11 +92,12 @@ class AcademicRecordService:
         student_id: str,
         data: CourseAttemptCreate,
     ):
+        students = StudentRepository(db)
+        attempts = AttemptRepository(db)
+        courses = CourseRepository(db)
+        offerings = OfferingRepository(db)
 
-        profile = ProfileRepository.get_profile(
-            db,
-            student_id,
-        )
+        profile = students.get_profile(student_id)
 
         if profile is None:
             raise HTTPException(
@@ -136,12 +108,7 @@ class AcademicRecordService:
                 ),
             )
 
-        course = (
-            AcademicRecordRepository.get_course_by_code(
-                db,
-                data.course_code,
-            )
-        )
+        course = courses.get_by_code(data.course_code)
 
         if course is None:
             raise HTTPException(
@@ -152,10 +119,7 @@ class AcademicRecordService:
                 ),
             )
 
-        term = AcademicRecordRepository.get_term(
-            db,
-            data.term_id,
-        )
+        term = offerings.get_term(data.term_id)
 
         if term is None:
             raise HTTPException(
@@ -163,23 +127,13 @@ class AcademicRecordService:
                 detail="Academic term does not exist.",
             )
 
-        record = AcademicRecordRepository.get_record(
-            db,
-            student_id,
-        )
+        record = attempts.get_record(student_id)
 
         if record is None:
-            record = (
-                ProfileRepository.ensure_academic_record(
-                    db,
-                    student_id,
-                )
-            )
-
+            record = students.ensure_academic_record(student_id)
             db.flush()
 
-        AcademicRecordRepository.add_attempt(
-            db,
+        attempts.add_attempt(
             record=record,
             course=course,
             term=term,
@@ -188,8 +142,6 @@ class AcademicRecordService:
             result_status=data.result_status.value,
             credits_earned=data.credits_earned,
         )
+        db.commit()
 
-        return AcademicRecordService._build_response(
-            db,
-            record,
-        )
+        return AcademicRecordService._build_response(db, record)

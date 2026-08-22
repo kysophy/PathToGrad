@@ -9,9 +9,9 @@ from app.database import get_db
 
 from app.schemas.academic_planning import (
     CourseEligibilityResponse,
-    GraduationProgressResponse,
     PrerequisiteCheckResponse,
 )
+from app.schemas.tools import GraduationProgress
 
 from app.services.academic_planning_service import (
     AcademicPlanningService,
@@ -26,7 +26,7 @@ router = APIRouter(
 
 @router.get(
     "/{student_id}/graduation-progress",
-    response_model=GraduationProgressResponse,
+    response_model=GraduationProgress,
 )
 def get_graduation_progress(
     student_id: str,
