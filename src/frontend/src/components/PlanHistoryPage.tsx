@@ -448,15 +448,13 @@ function VersionDetailPanel({ detail }: VersionDetailPanelProps) {
           document flow rather than using absolute positioning. */}
       {showFeedback && detail.feedback && (
         <div className="-mt-6 ml-6 max-w-md self-start sm:ml-10">
-          <img
-            src={tapeStrip}
-            alt=""
-            aria-hidden="true"
-            className="pointer-events-none -mb-3 ml-4 w-12 rotate-3 select-none"
-          />
+          {/* Note first, tape second: later-in-flow siblings paint over
+              earlier ones, so the tape renders in front of the note. The
+              tape is pulled up onto the note's top edge with a negative
+              margin, so it still overlaps without any absolute positioning. */}
           <div
             className={cn(
-              "font-patrick-hand flex flex-col gap-2 rounded-md p-5 text-lg text-neutral-900 shadow-lg",
+              "font-patrick-hand relative flex flex-col gap-2 rounded-md p-5 text-lg text-neutral-900 shadow-lg",
               detail.status === "RevisionRequested" ? "bg-[#FADCE0]" : "bg-[#7ADB6E]",
               "rotate-1",
             )}
@@ -469,6 +467,12 @@ function VersionDetailPanel({ detail }: VersionDetailPanelProps) {
               {detail.feedback.advisorName} · {formatDate(detail.feedback.decisionDate)}
             </p>
           </div>
+          <img
+            src={tapeStrip}
+            alt=""
+            aria-hidden="true"
+            className="relative z-10 -mt-6 ml-4 w-12 -translate-y-2 rotate-3 pointer-events-none select-none"
+          />
         </div>
       )}
     </div>
