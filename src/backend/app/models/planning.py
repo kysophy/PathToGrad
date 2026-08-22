@@ -10,6 +10,7 @@ from sqlalchemy import (
     Integer,
     String,
     Text,
+    UniqueConstraint,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -26,6 +27,12 @@ class StudyPlan(Base):
         CheckConstraint("version_number >= 1", name="chk_plan_version"),
         CheckConstraint("target_credit_load > 0", name="chk_plan_target_credits"),
         CheckConstraint("total_credits >= 0", name="chk_plan_total_credits"),
+        UniqueConstraint(
+            "student_id",
+            "term_id",
+            "version_number",
+            name="uq_study_plan_student_term_version",
+        ),
     )
 
     plan_id: Mapped[str] = mapped_column(String(36), primary_key=True)
@@ -94,6 +101,18 @@ class StudyPlan(Base):
 
 class StudyPlanItem(Base):
     __tablename__ = "study_plan_item"
+
+    __table_args__ = (
+        # Stand-in for course-level uniqueness (C-03): this table stores
+        # section_id, not course_id, so it can't stop two sections of the
+        # same course from both landing in one plan. A-16 must not pick
+        # two sections of the same course for a single student's plan.
+        UniqueConstraint(
+            "plan_id",
+            "section_id",
+            name="uq_study_plan_item_plan_section",
+        ),
+    )
 
     item_id: Mapped[str] = mapped_column(String(36), primary_key=True)
 

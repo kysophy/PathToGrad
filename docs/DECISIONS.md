@@ -28,9 +28,9 @@ Q31's "sum the seeded mandatory courses" is withdrawn. Compute
 
 For GEN+SE that is **138** against a mandatory sum of **120**. Graduation is two independent conditions: all mandatory `CSC`/`MTH` courses passed, **and** earned credits ≥ this figure.
 
-### Demo term is programme semester 8
+### Cadence freeze (C-01): `2026.1` is `term_type = Semester2`
 
-`offerings.csv` term_code `2026.1` maps to `T=8`. A course assigned to semester `S` is offered only when `S ≡ T (mod 3)`, so the catalog is GEN 2, GEN 5, and SE 8.
+A calendar term has no programme-semester number — see A-09b. What it has is a position in the academic year, stored as `AcademicTerm.term_type`. `offerings.csv` was generated for programme semesters 2, 5 and 8; since `2 % 3 == 5 % 3 == 8 % 3 == 2`, that position is `Semester2`, and `seed.sql` sets `TERM-2026-1` accordingly. Demo personas therefore sit at semesters 2, 5 and 8, not 1/4/7. This resolves the cadence mismatch that previously had `seed.sql` saying `Semester1` while the offerings file was built for 2/5/8 — do not reintroduce that split by editing one side without the other.
 
 ### Meeting times are clock intervals, half-open
 
@@ -100,7 +100,7 @@ Supersedes the earlier Part 2 bullets on GEN-as-NULL and `term_no` where they co
 
 ### No `term_no` on `ACADEMIC_TERM`
 
-The extra column is dropped. Demo term `2026.1` is still programme semester 8 by convention, but that number is not stored on the term row. Cadence (A-09b) must not parse `"2026.1"` and must not read a `term_no` column.
+The extra column is dropped. No programme-semester number is stored on the term row at all — `2026.1` carries only `term_type = Semester2` (see the cadence freeze above). Cadence (A-09b) must not parse `"2026.1"` and must not read a `term_no` column.
 
 ### `users.email` is UNIQUE
 

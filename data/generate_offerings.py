@@ -6,9 +6,14 @@ Emits:
 
 Clock times only. LT occupies a half-day; TH is a two-hour practical.
 
-Cadence: a course assigned to semester S is offered in term T only when
-S % 3 == T % 3. Demo term 2026.1 is programme semester T=8, so the catalog
-is GEN semesters 2 and 5 plus SE semester 8.
+Cadence: a course assigned to semester S is offered in a term whose
+term_type matches position_of(S) = S % 3 (see A-09b). This file was
+generated for programme semesters 2, 5 and 8 — all of which land on
+position 2 (Semester2) — so the demo term (2026.1, term_type=Semester2
+per the C-01 freeze) carries GEN semesters 2 and 5 plus SE semester 8.
+No term number is stored anywhere; this docstring is the only place
+"T=8" ever appears, purely as a description of how this fixture file
+was built.
 
 Fixtures (printed as 1-based CSV row numbers after generation):
 

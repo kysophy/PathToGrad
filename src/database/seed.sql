@@ -95,7 +95,10 @@ VALUES (
 
 /*
 Synthetic academic terms used only for development/testing.
-Cadence (T=8 for 2026.1) is not stored on this table.
+Cadence freeze (C-01): term_type = Semester2 so the demo catalog (GEN 2,
+GEN 5, SE 8 in offerings.csv) is actually offered — position_of(S) =
+S % 3, and 2/5/8 % 3 = 2, which is Semester2, not Semester1. This is not
+a programme-semester number; it's just the yearly slot the term sits in.
 */
 INSERT IGNORE INTO academic_term (
     term_id,
@@ -110,7 +113,7 @@ VALUES
     '2026.1',
     '2026-09-01',
     '2027-01-15',
-    'Semester1'
+    'Semester2'
 ),
 (
     'TERM-TEST-A',
