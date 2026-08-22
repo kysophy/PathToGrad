@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import starCluster from "../assets/Blue Stars.svg";
 import tapeStrip from "../assets/Tape Piece.svg";
@@ -281,6 +282,9 @@ export default function StudyPlan({
   planData = MOCK_PLAN_DATA,
   isGenerating = false,
 }: StudyPlanProps) {
+
+  const navigate = useNavigate();
+
   const [internalIntent, setInternalIntent] = useState<StudyPlanIntent>(
     intentProp ?? MOCK_INTENT,
   );
@@ -345,7 +349,7 @@ export default function StudyPlan({
           {/* Left Side: Plan History */}
           <button
             type="button"
-            onClick={onViewPlanHistory}
+            onClick={() => navigate('/plan-history')}
             className="font-patrick-hand group flex items-center gap-2 text-lg text-neutral-800 transition hover:text-[#0085FF]"
           >
             Plan history
