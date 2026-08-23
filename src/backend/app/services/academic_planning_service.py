@@ -1,15 +1,11 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from app.deterministic.graduation_progress import (
-    CompletedCourse,
-    calculate_graduation_progress,
+from app.deterministic.ports import PlanningRepos
+from app.deterministic.prerequisites import (
+    check_prerequisites as engine_check_prerequisites,
 )
-from app.deterministic.prerequisite_checker import (
-    AttemptSnapshot,
-    combine_prerequisites,
-    evaluate_attempts,
-)
+from app.deterministic.progress import get_graduation_progress as engine_graduation_progress
 from app.repositories.attempt_repository import AttemptRepository
 from app.repositories.course_repository import CourseRepository
 from app.repositories.curriculum_repository import CurriculumRepository
@@ -23,6 +19,16 @@ from app.schemas.academic_planning import (
     SectionResponse,
 )
 from app.schemas.tools import GraduationProgress
+
+
+def _repos(db: Session) -> PlanningRepos:
+    return PlanningRepos(
+        students=StudentRepository(db),
+        courses=CourseRepository(db),
+        curriculum=CurriculumRepository(db),
+        attempts=AttemptRepository(db),
+        offerings=OfferingRepository(db),
+    )
 
 
 class AcademicPlanningService:
@@ -62,42 +68,8 @@ class AcademicPlanningService:
                 detail="Academic record does not exist.",
             )
 
-        passed_rows = attempts.get_verified_passed_courses(record.record_id)
-
-        required_courses = CurriculumRepository(db).list_mandatory_courses(
-            curriculum.curriculum_id,
-            profile.spec_code,
-        )
-
-        completed_courses = [
-            CompletedCourse(
-                course_code=row.course_code,
-                credits=row.credits,
-            )
-            for row in passed_rows
-        ]
-
-        required_course_codes = [
-            course.course_code for course in required_courses
-        ]
-
-        result = calculate_graduation_progress(
-            completed_courses=completed_courses,
-            required_credits=curriculum.required_credits,
-            required_course_codes=required_course_codes,
-        )
-
-        return GraduationProgress(
-            student_id=student_id,
-            earned_credits=result.earned_credits,
-            required_credits=result.required_credits,
-            remaining_credits=result.remaining_credits,
-            mandatory_passed=len(result.missing_required_courses) == 0,
-            credit_requirement_met=result.credit_requirement_met,
-            missing_required_courses=result.missing_required_courses,
-            gpa=None,
-            completed=result.completed,
-        )
+        repos = _repos(db)
+        return engine_graduation_progress(student_id, repos=repos)
 
     @staticmethod
     def check_prerequisites(
@@ -107,8 +79,6 @@ class AcademicPlanningService:
     ) -> PrerequisiteCheckResponse:
 
         courses = CourseRepository(db)
-        attempts_repo = AttemptRepository(db)
-
         course = courses.get_by_code(course_code)
 
         if course is None:
@@ -117,72 +87,37 @@ class AcademicPlanningService:
                 detail=f"Course {course_code} does not exist.",
             )
 
-        record = attempts_repo.get_record(student_id)
-
-        if record is None:
+        if AttemptRepository(db).get_record(student_id) is None:
             raise HTTPException(
                 status_code=404,
                 detail="Academic record does not exist.",
             )
 
-        prerequisite_courses = courses.get_prerequisites(course.course_id)
-
-        if not prerequisite_courses:
-            return PrerequisiteCheckResponse(
-                course_code=course_code,
-                eligible=True,
-                prerequisites=[],
-                warnings=[],
-            )
+        engine_result = engine_check_prerequisites(
+            student_id,
+            [course.course_id],
+            repos=_repos(db),
+        )[0]
 
         items: list[PrerequisiteItemResponse] = []
-        evaluations = []
-        warnings: list[str] = []
-
-        for required in prerequisite_courses:
-            attempts = attempts_repo.list_for_course(
-                record.record_id,
-                required.course_id,
-            )
-
-            evaluation = evaluate_attempts(
-                AttemptSnapshot(
-                    attempt_number=attempt.attempt_number,
-                    result_status=attempt.result_status,
-                    grade=(
-                        float(attempt.grade)
-                        if attempt.grade is not None
-                        else None
-                    ),
-                )
-                for attempt in attempts
-            )
-
-            evaluations.append(evaluation)
-
-            item_warning = evaluation.warning
-
-            if item_warning:
-                warnings.append(f"{required.course_code}: {item_warning}")
-
+        for required in engine_result.prerequisites:
+            row = courses.get_by_id(required.course_id)
             items.append(
                 PrerequisiteItemResponse(
                     course_code=required.course_code,
-                    name_vi=required.name_vi,
+                    name_vi=row.name_vi if row is not None else required.course_code,
                     name_en=required.name_en,
-                    status=evaluation.status,
-                    satisfied=evaluation.satisfied,
-                    warning=item_warning,
+                    status=required.attempt_status or "Unknown",
+                    satisfied=required.satisfied,
+                    warning=required.warning,
                 )
             )
 
-        eligible = combine_prerequisites(evaluations)
-
         return PrerequisiteCheckResponse(
-            course_code=course_code,
-            eligible=eligible,
+            course_code=course.course_code,
+            eligible=engine_result.satisfied,
             prerequisites=items,
-            warnings=warnings,
+            warnings=engine_result.warnings,
         )
 
     @staticmethod

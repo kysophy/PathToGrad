@@ -31,6 +31,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.database import SessionLocal
+from app.deterministic.cadence import CadenceMismatchError, assert_offered_in
 from app.models import (
     AcademicTerm,
     ClassSection,
@@ -271,6 +272,15 @@ def import_offerings(db: Session, offerings_path: Path, courses: dict[str, Cours
         )
         return 0, 0, 0
 
+    assigned_by_course_id = {
+        row.course_id: row.assigned_semester
+        for row in db.scalars(
+            select(CurriculumCourse).where(
+                CurriculumCourse.curriculum_id == DEMO_CURRICULUM_ID
+            )
+        )
+    }
+
     with offerings_path.open(encoding="utf-8-sig", newline="") as fh:
         meetings = list(csv.DictReader(fh))
 
@@ -286,6 +296,18 @@ def import_offerings(db: Session, offerings_path: Path, courses: dict[str, Cours
         if course is None:
             print(f"WARN: offering for unknown course {course_code}")
             continue
+
+        assigned_semester = assigned_by_course_id.get(course.course_id)
+        if assigned_semester is None:
+            raise CadenceMismatchError(
+                f"Offering for {course_code} has no GEN+SE curriculum row, "
+                "so its yearly slot cannot be checked."
+            )
+        assert_offered_in(
+            assigned_semester,
+            term.term_type,
+            course_code=course_code,
+        )
 
         offering = db.scalar(
             select(CourseOffering).where(

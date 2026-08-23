@@ -53,6 +53,16 @@ class OfferingRepository:
             )
         )
 
+    def list_active_for_term(self, term_id: str) -> list[CourseOffering]:
+        return list(
+            self.session.scalars(
+                select(CourseOffering).where(
+                    CourseOffering.term_id == term_id,
+                    CourseOffering.status == "Active",
+                )
+            ).all()
+        )
+
     def list_active_sections(self, offering_id: str) -> list[ClassSection]:
         return list(
             self.session.scalars(

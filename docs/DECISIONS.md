@@ -116,7 +116,7 @@ Constraint `uq_users_email`. One account per email.
 
 ### Graduation JSON is `GraduationProgress`
 
-The live API `/graduation-progress` returns the tool type (`mandatory_passed`, `credit_requirement_met`, `gpa`, …). `gpa` is `null` until A-13. The old `GraduationProgressResponse` shape is gone.
+The live API `/graduation-progress` returns the tool type (`mandatory_passed`, `credit_requirement_met`, `gpa`, …). A-13 now fills `gpa` from the latest graded attempt per course (not the best grade). The old `GraduationProgressResponse` shape is gone.
 
 ### Demo curriculum stays GEN+SE on `CURR-TEST-2024`
 
@@ -129,3 +129,31 @@ Do not dump CN + SE + CS into the same `curriculum_id`; shared course codes woul
 ### IDs stay strings
 
 Checklist tool sketches that used `int` were wrong.
+
+---
+
+## 2026-08-23 — Part 3 engine (A-09 to A-18)
+
+### Cadence lives in one helper
+
+`position_of(semester_no)` / `is_offered_in` in `app/deterministic/cadence.py` is the only yearly-slot formula. Catalog, importer, retakes, and the plan generator all call it. Do not add a second `(current_semester - assigned_semester) % 3` check.
+
+### GPA and risk thresholds (spec was silent)
+
+The 10-point scale is already how grades are stored (`DECIMAL(3,1)`). Conventions used by A-13 / A-18:
+
+- GPA is the credit-weighted average of the **latest** attempt per course that has a numeric grade (Failed grades count, so a worse retake lowers GPA).
+- `GPA_BELOW_THRESHOLD` fires when GPA < **5.0**.
+- `FAILED_UNRETAKEN_LATE` fires when `current_semester >= 7` and a Failed course still has a retake left.
+- `BACKLOG_STALE` fires when a mandatory course is still unpassed and `current_semester - assigned_semester >= 2`.
+
+Change `app/deterministic/constants.py` and this log together if the team picks different numbers.
+
+### Plan uniqueness is the generator’s job
+
+The database unique on `study_plan_item` is `(plan_id, section_id)`. A-16 refuses two sections of the same course in one plan.
+
+### Completed mandatory courses have no enum
+
+`CoursePrimaryStatus` has no Completed value. A passed mandatory course that cannot be retaken this term is labelled **Future** so it does not appear in Recommended (Assigned + Backlog).
+
