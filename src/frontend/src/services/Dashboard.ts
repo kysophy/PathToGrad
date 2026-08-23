@@ -32,22 +32,28 @@ type ProfileApiResponse = {
   warning: string | null;
 };
 
+/**
+ * Matches app/schemas/tools.py's GraduationProgress (A-13) — the shape the
+ * live API has returned since the deterministic engine landed. There is no
+ * completed_required_courses or progress_percentage field here (the old,
+ * pre-engine response had both); use mandatory_passed and a client-side
+ * percent instead. See DECISIONS.md, "Graduation JSON is GraduationProgress".
+ */
 type GraduationProgressApiResponse = {
   student_id: string;
-  curriculum_id: string;
 
   required_credits: number;
   earned_credits: number;
   remaining_credits: number;
 
+  mandatory_passed: boolean;
   credit_requirement_met: boolean;
 
-  completed_required_courses: string[];
   missing_required_courses: string[];
 
-  completed: boolean;
+  gpa: number | null;
 
-  progress_percentage: number;
+  completed: boolean;
 };
 
 /**
@@ -76,7 +82,7 @@ export type DashboardData = {
   graduationPercent: number;
   graduationCompleted: boolean;
 
-  completedRequiredCourses: string[];
+  mandatoryPassed: boolean;
   missingRequiredCourses: string[];
 
   studentName?: string;
@@ -127,8 +133,14 @@ export async function getDashboardData(): Promise<DashboardData> {
     ),
   ]);
 
+  const graduationPercent =
+    progress.required_credits > 0
+      ? Math.min(100, Math.round((progress.earned_credits / progress.required_credits) * 100))
+      : 0;
+
   return {
     ...PLACEHOLDER_DASHBOARD_EXTRAS,
+    ...(progress.gpa !== null ? { currentGPA: progress.gpa } : {}),
 
     studentId: profile.student_id,
 
@@ -141,10 +153,10 @@ export async function getDashboardData(): Promise<DashboardData> {
     requiredCredits: progress.required_credits,
     remainingCredits: progress.remaining_credits,
 
-    graduationPercent: progress.progress_percentage,
+    graduationPercent,
     graduationCompleted: progress.completed,
 
-    completedRequiredCourses: progress.completed_required_courses,
+    mandatoryPassed: progress.mandatory_passed,
     missingRequiredCourses: progress.missing_required_courses,
   };
 }

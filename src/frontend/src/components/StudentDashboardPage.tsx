@@ -58,7 +58,7 @@ export default function StudentDashboard({ data }: StudentDashboardProps) {
     programName,
     curriculumVersion,
     profileComplete,
-    completedRequiredCourses,
+    mandatoryPassed,
     missingRequiredCourses,
   } = data;
 
@@ -188,19 +188,11 @@ export default function StudentDashboard({ data }: StudentDashboardProps) {
         <section className="rounded-2xl border border-neutral-200 bg-white p-6">
           <h2 className="font-heading text-2xl text-notebook-ink">Required Course Status</h2>
           <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="rounded-xl bg-green-50 p-4">
-              <h3 className="font-heading text-lg">Completed</h3>
-              {completedRequiredCourses.length === 0 ? (
-                <p className="mt-2 font-body text-sm text-neutral-600">
-                  No verified required course has been completed yet.
-                </p>
-              ) : (
-                <ul className="mt-2 list-disc pl-5 font-body text-sm">
-                  {completedRequiredCourses.map((courseCode) => (
-                    <li key={courseCode}>{courseCode}</li>
-                  ))}
-                </ul>
-              )}
+                        <div className="rounded-xl bg-green-50 p-4">
+              <h3 className="font-heading text-lg">Mandatory courses</h3>
+              <p className="mt-2 font-body text-sm text-neutral-600">
+                {mandatoryPassed ? 'All mandatory courses passed.' : 'Not yet complete.'}
+              </p>
             </div>
 
             <div className="rounded-xl bg-red-50 p-4">
