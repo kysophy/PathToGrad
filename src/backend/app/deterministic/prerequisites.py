@@ -105,12 +105,14 @@ def check_prerequisites(
     graph_rows = repos.courses.get_graph(course_ids or None)
     edges = [(row.course_id, row.required_course_id) for row in graph_rows]
     cycles = find_prerequisite_cycles(course_ids=course_ids or None, edges=edges)
-    cycle_warning = None
-    if cycles:
-        pretty = " -> ".join(cycles[0])
-        cycle_warning = (
-            f"Circular prerequisite cycle {pretty}. Eligibility cannot be verified."
+    cycles_by_course: dict[str, list[str]] = {}
+    for loop in cycles:
+        pretty = (
+            f"Circular prerequisite cycle {' -> '.join(loop)}. "
+            "Eligibility cannot be verified."
         )
+        for node in dict.fromkeys(loop):
+            cycles_by_course.setdefault(node, []).append(pretty)
 
     results: list[PrerequisiteResult] = []
     for course_id in course_ids:
@@ -172,8 +174,8 @@ def check_prerequisites(
                 any_uncertain = True
                 missing.append(item)
 
-        if cycle_warning:
-            warnings.append(cycle_warning)
+        for text in cycles_by_course.get(course_id, []):
+            warnings.append(text)
             any_uncertain = True
 
         if any_uncertain:

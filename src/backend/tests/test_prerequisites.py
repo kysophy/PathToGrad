@@ -147,10 +147,18 @@ def test_cycle_is_reported_and_does_not_hang():
             FakePrereq("c-dep", "c-base"),
         ],
     )
-    results = check_prerequisites("S1", ["c-base", "c-dep"], repos=repos)
-    assert len(results) == 2
-    assert any(item.status == ToolStatus.UNCERTAIN for item in results)
-    assert any("cycle" in warning.lower() for item in results for warning in item.warnings)
+    results = check_prerequisites(
+        "S1", ["c-base", "c-dep", "c-oop"], repos=repos
+    )
+    by_id = {item.course_id: item for item in results}
+    assert by_id["c-base"].status == ToolStatus.UNCERTAIN
+    assert by_id["c-dep"].status == ToolStatus.UNCERTAIN
+    assert any("cycle" in text.lower() for text in by_id["c-base"].warnings)
+    assert any("cycle" in text.lower() for text in by_id["c-dep"].warnings)
+    # Unrelated course in the same batch must not inherit the cycle warning.
+    assert by_id["c-oop"].status == ToolStatus.OK
+    assert by_id["c-oop"].satisfied is True
+    assert not any("cycle" in text.lower() for text in by_id["c-oop"].warnings)
 
 
 def test_find_prerequisite_cycles_returns_the_loop():
