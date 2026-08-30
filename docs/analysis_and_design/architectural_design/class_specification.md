@@ -65,13 +65,13 @@
 | 3 | `courseName: String` | Private | Required | Stores the course name. |
 | 4 | `credits: Integer` | Private | Greater than zero | Stores the number of credits. |
 | 5 | `suggestedSemester: Integer` | Private | May be empty | Stores the suggested study semester. |
-| 6 | `status: CourseStatus` | Private | Active or Archived | Store availability status. |
+| 6 | `status: CourseStatus` | Private | Active or Archived | Stores availability status. |
 | 7 | `prerequisites: List<CoursePrerequisite>` | Private | May be empty | Stores prerequisite courses. |
 
 | Seq | Operation | Modifier | Constraint | Description |
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | `getPrerequisites()` | Public | | Returns prerequisite courses. |
-| 2 | `isActive()` | Public | | Check whether the course is active. |
+| 2 | `isActive()` | Public | | Checks whether the course is active. |
 
 ## 1.3.5 Class C5: Curriculum
 **Responsibility:** Defines course and credit requirements for an academic-program version.
@@ -115,7 +115,7 @@
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | `sectionId: String` | Private | Required; unique | Identifies the class section. |
 | 2 | `sectionCode: String` | Private | Required | Stores the section code. |
-| 3 | `courseOffering` | Private | Required; must refer to one course offering | Identifies the course offering to which the section belong to. |
+| 3 | `courseOffering: CourseOffering` | Private | Required; must refer to one course offering | Identifies the course offering the section belongs to. |
 | 4 | `capacity: Integer` | Private | Cannot be negative | Stores planned capacity. |
 | 5 | `status: SectionStatus` | Private | Active, Inactive, or Archived | Stores section status. |
 | 6 | `meetings: List<SectionMeeting>` | Private | May be empty | Stores meeting times. |
@@ -124,7 +124,7 @@
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | `getMeetingTimes(): List<SectionMeeting>` | Public | | Returns section meetings. |
 | 2 | `addMeeting(meeting: SectionMeeting): void` | Public | Meeting must be valid | Adds a meeting time to the section. |
-| 3 | `conflictsWith(other:ClassSection):Boolean` | Public | | Checks schedule overlap. |
+| 3 | `conflictsWith(other: ClassSection): Boolean` | Public | | Checks schedule overlap. |
 | 4 | `isAvailable(): Boolean` | Public | | Checks whether the section is selectable. |
 
 ## 1.3.8 Class C8: StudyPlan
@@ -133,7 +133,7 @@
 | Seq | Property | Modifier | Constraint | Description |
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | `planId: String` | Private | Required; unique | Identifies the plan version. |
-| 2 | `studentProfile` | Private | Required | Identifies the student who owns the plan. |
+| 2 | `studentProfile: StudentProfile` | Private | Required | Identifies the student who owns the plan. |
 | 3 | `targetTerm: AcademicTerm` | Private | May be empty in Draft | Identifies the academic term targeted by the plan. |
 | 4 | `versionNumber: Integer` | Private | At least 1 | Stores version number. |
 | 5 | `status: PlanStatus` | Private | Draft, PendingReview, Approved, NeedsRevision, or Superseded | Stores lifecycle status. |
@@ -142,14 +142,14 @@
 | 8 | `totalCredits: Integer` | Private | Derived from plan items | Stores total plan credits. |
 | 9 | `previousVersion: StudyPlan` | Private | Optional | Links to the earlier version. |
 | 10 | `items: List<StudyPlanItem>` | Private | May be empty in Draft | Stores recommended courses. |
-| 11 | `createdAt` | Private | Automatically set when created | Stores the plan creation time. |
+| 11 | `createdAt: DateTime` | Private | Automatically set when created | Stores the plan creation time. |
 | 12 | `updatedAt: DateTime` | Private | Automatically updated | Stores the latest update time. |
 | 13 | `submittedAt: DateTime` | Private | | Stores the time the plan was submitted for review. |
 
 | Seq | Operation | Modifier | Constraint | Description |
 | :--- | :--- | :--- | :--- | :--- |
-| 1 | `addItem(item:StudyPlanItem): void` | Public | Plan must be editable | Adds a course item. |
-| 2 | `removeItem(itemId:String): void` | Public | Plan must be Draft | Removes an item. |
+| 1 | `addItem(item: StudyPlanItem): void` | Public | Plan must be editable | Adds a course item. |
+| 2 | `removeItem(itemId: String): void` | Public | Plan must be Draft | Removes an item. |
 | 3 | `calculateTotalCredits(): Integer` | Public | | Calculates total credits. |
 | 4 | `validatePlan(): Boolean` | Public | Uses verified rules | Validates prerequisites, load, and timetable. |
 | 5 | `saveDraft(): void` | Public | | Saves the plan as Draft. |

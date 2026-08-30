@@ -5,7 +5,7 @@
 * **Target Role:** Student, Academic Advisor, Academic Staff/Admin
 * **Related Requirements:** NFR-03, NFR-04, FR-01
 * **Purpose:** Authenticates system users and routes them to their respective role-based workspaces.
-* **Design Concept:** Stylized as a notebook cover with an interactive nametag login field. Includes a role selector dropdown (`Student`, `Advisor`, `Admin`), username/ID and password input fields, a "Forgot Password" link, and a submit navigation button.
+* **Components & Layout:** Stylized as a notebook cover with an interactive nametag login field. Includes a role selector dropdown (`Student`, `Advisor`, `Admin`), username/ID and password input fields, a "Forgot Password" link, and a submit navigation button.
 
 ## 2. SCR-02: Student's Dashboard
 * **Screen ID:** SCR-02
@@ -45,7 +45,7 @@
 * **Purpose:** Interactive workspace where students request semester schedules and inspect AI-recommended or deterministic fallback course selections.
 * **Components & Layout:**
   * **Planning Controls:** Target semester selector, target credit load selector, optional natural-language preferences text box, and a "Generate Plan" action button.
-  * **AI Recommendation Card:** Displays reasoning for suggested courses, graduation progress delta, and highlighted yellow risk warning banners.
+  * **AI Recommendation Card:** Displays reasoning for suggested courses, graduation progress delta, and risk warning banners highlighted in yellow.
   * **7-Day Timetable:** Interactive visual calendar displaying non-conflicting Theory (LT) and Lab (TH) time slots.
   * **Actions:** "Save as Draft" button, "Submit for Review" button, and link to Plan History.
 
@@ -54,7 +54,7 @@
 * **Target Role:** Student
 * **Related Requirements:** FR-23, U003, U004
 * **Purpose:** Version repository allowing students to inspect historical plan iterations and attached advisor review outcomes.
-* **Components & Layout:** Sorting filters by creation date, semester, credits, and lifecycle status (`Draft`, `PendingReview`, `Approved`, `Needs Revision`). List of historical plan cards displaying timestamp, total credits, selected course list, advisor feedback text box, and "Create Revision" trigger.
+* **Components & Layout:** Sorting filters by creation date, semester, credits, and lifecycle status (`Draft`, `PendingReview`, `Approved`, `NeedsRevision`). List of historical plan cards displaying timestamp, total credits, selected course list, advisor feedback text box, and "Create Revision" trigger.
 
 ## 8. SCR-08: Student Plans Dashboard (Advisor Portal)
 * **Screen ID:** SCR-08

@@ -1,7 +1,7 @@
 # Conceptual Model
 
 ## 2.1 Overview
-The conceptual model presents the main semantic entities of PathToGrad and their relationships. The model covers user access, academic structure, student Academic Records, curriculum rules, course offerings, weekly timetables, study plans, advisor reviews, and agent traceability. 
+The conceptual model presents the main semantic entities of PathToGrad and their relationships. The model covers user access, academic structure, student academic records, curriculum rules, course offerings, weekly timetables, study plans, advisor reviews, and agent traceability.
 
 *   A **Student Profile** is linked to an Academic Program and a Curriculum. 
 *   The student's **Academic Record** contains Course Attempts used for prerequisite checking and graduation-progress calculation. 

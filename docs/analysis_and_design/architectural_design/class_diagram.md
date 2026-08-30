@@ -1,6 +1,6 @@
 # Class Diagram
 
-## Overview
+## 1.2 Overview
 The class diagram describes the main object classes of PathToGrad, their responsibilities, and their relationships. To improve readability, the class model is divided into three diagrams:
 
 1.  **Academic Domain:** Includes academic structure, student profiles, Academic Records, course attempts, courses, curricula, and academic terms.

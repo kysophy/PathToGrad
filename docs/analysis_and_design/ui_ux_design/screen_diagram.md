@@ -1,4 +1,4 @@
-# Screen Navigation Diagram
+# Screen Diagram
 
 ## 1. Overview
 The screen flow describes the navigation pathways across PathToGrad for each user role: Student, Academic Advisor, and Academic Staff/Admin.

@@ -1,4 +1,4 @@
-# Data Specification
+# Data Specifications
 
 ## User Management & Profiles
 
@@ -107,7 +107,7 @@
 | :--- | :--- | :--- | :--- |
 | `meeting_id` | VARCHAR(36) | PRIMARY KEY, NOT NULL | Unique identifier for the time block. |
 | `section_id` | VARCHAR(36) | FOREIGN KEY, NOT NULL | Links to the CLASS_SECTION (e.g., Group 1). |
-| `day_of_week` | ENUM | NOT NULL | 'Monday', 'Tuesday', 'Wednesday', etc.. |
+| `day_of_week` | ENUM | NOT NULL | 'Monday', 'Tuesday', 'Wednesday', etc. |
 | `start_time` | TIME | NOT NULL | The exact minute the class begins. |
 | `end_time` | TIME | NOT NULL | The exact minute the class ends. |
 
@@ -140,9 +140,9 @@
 | `plan_id` | VARCHAR(36) | PRIMARY KEY, NOT NULL | Unique identifier for the plan version. |
 | `student_id` | VARCHAR(20) | FOREIGN KEY, NOT NULL | Links to the requesting student. |
 | `version_number` | INT | NOT NULL, >= 1 | Tracks the revision iteration of the plan. |
-| `status` | ENUM | NOT NULL | 'Draft', 'PendingReview', 'Approved', 'Needs Revision'. |
+| `status` | ENUM | NOT NULL | Restricted to 'Draft', 'PendingReview', 'Approved', 'NeedsRevision', or 'Superseded'. |
 | `target_credit_load` | INT | NOT NULL | The initial credit limit requested by the student. |
-| `total_credits` | INT | NOT NULL | The total credits accumulated throughout the studying process. |
+| `total_credits` | INT | NOT NULL | The total credits represented by this plan's items. |
 
 ### 17. STUDY_PLAN_ITEM
 | Attribute Name | Data Type | Constraints | Description |
@@ -157,6 +157,6 @@
 | `review_id` | VARCHAR(36) | PRIMARY KEY, NOT NULL | Unique identifier for the review event. |
 | `plan_id` | VARCHAR(36) | FOREIGN KEY, NOT NULL | Links to the submitted STUDY_PLAN. |
 | `advisor_id` | VARCHAR(36) | FOREIGN KEY, NOT NULL | Links to the USER table (Advisor role). |
-| `decision` | ENUM | NOT NULL | Restricted to 'Approved' or 'Needs Revision'. |
-| `comment` | TEXT | NULL | Advisor's written feedback. (Enforced as required in the logic layer if the decision is 'Needs Revision'). |
-| `review_at` | DATETIME | NOT NULL | The exact server timestamp of when the review was submitted. |
+| `decision` | ENUM | NOT NULL | Restricted to 'Approved' or 'NeedsRevision'. |
+| `comment` | TEXT | NULL | Advisor's written feedback. (Enforced as required in the logic layer if the decision is 'NeedsRevision'). |
+| `reviewed_at` | DATETIME | NOT NULL | The exact server timestamp of when the review was submitted. |
