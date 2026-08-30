@@ -48,10 +48,10 @@ The objective of this test plan is to define the testing strategy, tools, scope,
 | `TD-PROFILE-INCOMPLETE` | Profile data missing one mandatory field. |
 | `TD-CURRICULUM` | Test curriculum fixture defining standard required credit totals and mandatory course rules. |
 | `TD-COURSE-BASE` | Valid catalog course with zero prerequisite dependencies. |
-| `TD-COURSE-DEPENDENT`| Valid catalog course explicitly requiring `TD-COURSE-BASE`. |
+| `TD-COURSE-DEPENDENT` | Valid catalog course explicitly requiring `TD-COURSE-BASE`. |
 | `TD-ATTEMPT-PASSED` | Verified Passed attempt record with grade >= 5.0 and earned credits. |
 | `TD-ATTEMPT-FAILED` | Failed attempt record with grade < 5.0 and 0 earned credits. |
-| `TD-ATTEMPT-INPROGRESS`| Currently ongoing course attempt with NULL grade and 0 earned credits. |
+| `TD-ATTEMPT-INPROGRESS` | Currently ongoing course attempt with NULL grade and 0 earned credits. |
 | `TD-TERM-TARGET` | The academic semester designated for study plan generation. |
-| `TD-OFFERING-AVAILABLE`| Course offering in target term with at least one available section and meeting time. |
+| `TD-OFFERING-AVAILABLE` | Course offering in target term with at least one available section and meeting time. |
 | `TD-OFFERING-MISSING` | Course offering with no scheduled sections in the selected term. |

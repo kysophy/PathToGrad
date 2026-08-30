@@ -1,11 +1,9 @@
 # Requirements Analyst Test Case Specifications
 
 ## 1. Purpose
-
 This document specifies the test cases assigned to the Requirements Analyst for the PathToGrad system. The test cases are derived from the approved Project Proposal, Software Requirements Specification, and Software Design Document.
 
 The assigned testing scope covers the following functional areas:
-
 1. Academic Profile, Academic Record, and Graduation Progress.
 2. Prerequisite and Course Eligibility Validation.
 
@@ -14,9 +12,7 @@ The purpose of these test cases is to verify that the system processes academic 
 ## 2. Test Scope
 
 ### 2.1 Academic Profile, Academic Record, and Graduation Progress
-
 The testing scope includes:
-
 - Creating and updating a student academic profile.
 - Validating required profile information.
 - Identifying the curriculum applicable to the student's academic program and intake year.
@@ -27,9 +23,7 @@ The testing scope includes:
 - Calculating the student's graduation progress.
 
 ### 2.2 Prerequisite and Course Eligibility Validation
-
 The testing scope includes:
-
 - Validating courses that do not require prerequisites.
 - Validating satisfied and unsatisfied prerequisites.
 - Handling failed and in-progress prerequisite courses.
@@ -52,23 +46,18 @@ The testing scope includes:
 | Course Eligibility and Availability | F-04 Course Catalog Tool and F-05 Prerequisite Checker Tool | FR-19 | U003 Generate Study Plan | CourseOffering, ClassSection, AcademicTerm |
 
 ## 4. Testing Techniques
-
 The following black-box testing techniques are used in this document:
 
 ### 4.1 Functional Testing
-
 Functional testing is used to verify whether each feature produces the expected result defined by the requirements and use-case specifications.
 
 ### 4.2 Equivalence Partitioning
-
 Input data are divided into valid and invalid groups. Representative values from each group are selected to reduce duplicated test cases while maintaining requirement coverage.
 
 ### 4.3 Boundary Value Analysis
-
 Boundary-value testing is applied to fields with documented limits, such as attempt number, earned credits, and configured academic constraints.
 
 Values that are not explicitly defined in the approved project documents are not assumed. Such values must be confirmed by the team before test execution.
 
 ### 4.4 Decision-Table Testing
-
 Decision-table testing is used for prerequisite and course-eligibility validation because the result may depend on several conditions, including prerequisite status, course existence, course offering, academic term, and data completeness.

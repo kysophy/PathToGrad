@@ -2,13 +2,13 @@
 
 ## 1. Use Case Information
 
-| Field                          | Description                |
-| ------------------------------ | -------------------------- |
-| Use Case ID                    | U002                       |
-| Use Case Name                  | Manage Academic Record     |
-| Actor                          | Student                    |
-| Related Functional Requirement | FR-02                      |
-| Related Feature                | Academic Record Management |
+| Field                              | Description                     |
+| ---------------------------------- | -------------------------------- |
+| Use Case ID                       | U002                            |
+| Use Case Name                     | Manage Academic Record          |
+| Actor(s)                          | Student                         |
+| Related Functional Requirement(s) | FR-02                           |
+| Related Feature(s)                | F-02 Academic Record Management |
 
 ## 2. Brief Description
 
@@ -54,5 +54,3 @@ This use case allows students to enter and update academic records, including co
 - The system should store academic record data in MySQL.
 - The system should protect student academic information.
 - The system should show clear warnings when data is missing or uncertain.
-
-

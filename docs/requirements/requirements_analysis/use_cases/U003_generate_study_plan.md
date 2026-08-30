@@ -2,14 +2,13 @@
 
 ## 1. Use Case Information
 
-| Field                           | Description                                                      |
-| ------------------------------- | ---------------------------------------------------------------- |
-| Use Case ID                     | U003                                                             |
-| Use Case Name                   | Generate Study Plan                                              |
-| Primary Actor                   | Student                                                          |
-| Supporting Actor                | LLM Provider                                                     |
-| Related Functional Requirements | FR-03 to FR-14, FR-17                                            |
-| Related Feature                 | LLM Planning Agent, Study Plan Generator, Fallback Planning Mode |
+| Field                              | Description                                                                        |
+| ---------------------------------- | ------------------------------------------------------------------------------------ |
+| Use Case ID                       | U003                                                                               |
+| Use Case Name                     | Generate Study Plan                                                                |
+| Actor(s)                          | Student (Primary), LLM Provider (Supporting)                                       |
+| Related Functional Requirement(s) | FR-03 to FR-14, FR-17                                                              |
+| Related Feature(s)                | F-03 LLM Planning Agent, F-07 Semester Plan Generator, F-10 Fallback Planning Mode |
 
 ## 2. Brief Description
 
@@ -67,5 +66,3 @@ This use case allows students to request a recommended semester plan. The LLM Pl
 - The system should continue core planning functions when the LLM provider is unavailable.
 - The system should log important agent actions and tool calls for traceability.
 - The system should present planning results in clear and simple language.
-
-

@@ -56,9 +56,9 @@ Details: [`src/backend/README.md`](src/backend/README.md), [`src/frontend/README
 
 ## Repository layout
 
-- `/src/backend` — FastAPI, SQLAlchemy, Alembic
-- `/src/frontend` — React + Vite + Tailwind
-- `/src/database` — demo `seed.sql` (apply after Alembic)
-- `/data` — canonical `Courses.csv` / `offerings.csv` (do not hand-edit)
-- `/docs` — requirements, design, tests, decisions
-- `/pa` — assignment submissions
+- `/src/backend`: FastAPI, SQLAlchemy, Alembic
+- `/src/frontend`: React + Vite + Tailwind
+- `/src/database`: demo `seed.sql` (apply after Alembic)
+- `/data`: canonical `Courses.csv` / `offerings.csv` (do not hand-edit)
+- `/docs`: requirements, design, tests, decisions
+- `/pa`: assignment submissions

@@ -1,10 +1,10 @@
-# PathToGrad — Decisions log
+# PathToGrad: Decisions log
 
 Running log of deviations from the Design document and of data-modelling choices that later tasks depend on. Add a line in the same change as the decision.
 
 ---
 
-## 2026-08-22 — Part 1 rewrite (W1 / W2)
+## 2026-08-22: Part 1 rewrite (W1 / W2)
 
 Supersedes the 2026-08-16 entries where they conflict.
 
@@ -30,7 +30,7 @@ For GEN+SE that is **138** against a mandatory sum of **120**. Graduation is two
 
 ### Cadence freeze (C-01): `2026.1` is `term_type = Semester2`
 
-A calendar term has no programme-semester number — see A-09b. What it has is a position in the academic year, stored as `AcademicTerm.term_type`. `offerings.csv` was generated for programme semesters 2, 5 and 8; since `2 % 3 == 5 % 3 == 8 % 3 == 2`, that position is `Semester2`, and `seed.sql` sets `TERM-2026-1` accordingly. Demo personas therefore sit at semesters 2, 5 and 8, not 1/4/7. This resolves the cadence mismatch that previously had `seed.sql` saying `Semester1` while the offerings file was built for 2/5/8 — do not reintroduce that split by editing one side without the other.
+A calendar term has no programme-semester number (see A-09b). What it has is a position in the academic year, stored as `AcademicTerm.term_type`. `offerings.csv` was generated for programme semesters 2, 5 and 8; since `2 % 3 == 5 % 3 == 8 % 3 == 2`, that position is `Semester2`, and `seed.sql` sets `TERM-2026-1` accordingly. Demo personas therefore sit at semesters 2, 5 and 8, not 1/4/7. This resolves the cadence mismatch that previously had `seed.sql` saying `Semester1` while the offerings file was built for 2/5/8; do not reintroduce that split by editing one side without the other.
 
 ### Meeting times are clock intervals, half-open
 
@@ -38,7 +38,7 @@ A calendar term has no programme-semester number — see A-09b. What it has is a
 
 ### Importer defaults to Track A CSVs
 
-`python -m app.scripts.import_courses` (no args) reads `PathToGrad/data/Courses.csv` and `offerings.csv`. It fills `course`, GEN+SE `curriculum_course` on `CURR-TEST-2024`, `prerequisite`, and the `2026.1` offering/section/meeting rows. The raw commented dump lives in `Materials and Notes/Courses.raw.csv` (never edited). `seed.sql` sets `required_credits = 138`. Do not apply `fixtures/academic_planning_test_data.sql` on a demo database — it used to overwrite that number and inject contradicting prerequisite edges.
+`python -m app.scripts.import_courses` (no args) reads `PathToGrad/data/Courses.csv` and `offerings.csv`. It fills `course`, GEN+SE `curriculum_course` on `CURR-TEST-2024`, `prerequisite`, and the `2026.1` offering/section/meeting rows. The raw commented dump lives in `Materials and Notes/Courses.raw.csv` (never edited). `seed.sql` sets `required_credits = 138`. Do not apply `fixtures/academic_planning_test_data.sql` on a demo database: it used to overwrite that number and inject contradicting prerequisite edges.
 
 ### Prerequisite set is derived, not official
 
@@ -46,7 +46,7 @@ Official FIT tiên quyết / học trước / song hành lists were not availabl
 
 ### All prerequisite edges use passed-only semantics
 
-Semicolon-separated AND-list. No `rule_type`, no OR groups, no credit-threshold gates. `học trước` vs `tiên quyết` is not encoded — every edge is must-have-passed.
+Semicolon-separated AND-list. No `rule_type`, no OR groups, no credit-threshold gates. `học trước` vs `tiên quyết` is not encoded; every edge is must-have-passed.
 
 ### Curriculum is truncated at semester 9
 
@@ -58,7 +58,7 @@ Thesis / graduation internship / graduation project internship are dropped. Do n
 
 ---
 
-## 2026-08-22 — Part 2 schema (A-05 to A-08)
+## 2026-08-22: Part 2 schema (A-05 to A-08)
 
 ### Alembic is canonical
 
@@ -78,7 +78,7 @@ All edges remain passed-only AND-lists. Adding `rule_type` is still rejected.
 
 ### `selection_reason` stores A-09 codes
 
-`STUDY_PLAN_ITEM.selection_reason` uses `ASSIGNED_THIS_SEMESTER`, `BACKLOG_FROM_SEMESTER_N`, `ELECTIVE_FILL`, `RETAKE_AFTER_FAIL`, `RETAKE_IMPROVEMENT` — not the short labels Assigned/Backlog/Elective/Retake.
+`STUDY_PLAN_ITEM.selection_reason` uses `ASSIGNED_THIS_SEMESTER`, `BACKLOG_FROM_SEMESTER_N`, `ELECTIVE_FILL`, `RETAKE_AFTER_FAIL`, `RETAKE_IMPROVEMENT`, not the short labels Assigned/Backlog/Elective/Retake.
 
 ### Course names are split
 
@@ -90,7 +90,7 @@ All edges remain passed-only AND-lists. Adding `rule_type` is still rejected.
 
 ---
 
-## 2026-08-22 — Proofreading decisions (applied)
+## 2026-08-22: Proofreading decisions (applied)
 
 Supersedes the earlier Part 2 bullets on GEN-as-NULL and `term_no` where they conflict.
 
@@ -100,7 +100,7 @@ Supersedes the earlier Part 2 bullets on GEN-as-NULL and `term_no` where they co
 
 ### No `term_no` on `ACADEMIC_TERM`
 
-The extra column is dropped. No programme-semester number is stored on the term row at all — `2026.1` carries only `term_type = Semester2` (see the cadence freeze above). Cadence (A-09b) must not parse `"2026.1"` and must not read a `term_no` column.
+The extra column is dropped. No programme-semester number is stored on the term row at all: `2026.1` carries only `term_type = Semester2` (see the cadence freeze above). Cadence (A-09b) must not parse `"2026.1"` and must not read a `term_no` column.
 
 ### `users.email` is UNIQUE
 
@@ -132,7 +132,7 @@ Checklist tool sketches that used `int` were wrong.
 
 ---
 
-## 2026-08-23 — Part 3 engine (A-09 to A-18)
+## 2026-08-23: Part 3 engine (A-09 to A-18)
 
 ### Cadence lives in one helper
 

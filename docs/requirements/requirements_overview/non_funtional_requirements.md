@@ -1,5 +1,7 @@
 # Non-Functional Requirements Specification
 
+This document lists the non-functional requirements for the PathToGrad course planning system. Each requirement is identified with an NFR-XX ID.
+
 | ID | Non-functional Requirement |
 | :--- | :--- |
 | NFR-01 | The system should be accessible through modern web browsers. |

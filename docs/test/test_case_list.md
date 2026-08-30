@@ -3,9 +3,9 @@
 | Seq | Test Case ID & Name | Feature / Requirement | Description |
 | :--- | :--- | :--- | :--- |
 | 1 | **TC-01:** Create a valid academic profile | F-01 / FR-01 / U001 | Verify that a complete and valid academic profile can be saved. |
-| 2 | **TC-02:** Reject missing required profile info | F-01 / FR-01 / U001 | Verify validation error handling when mandatory profile fields are omitted. |
+| 2 | **TC-02:** Reject missing required profile info | F-01 / FR-01 / U001 | Verify that validation errors are handled correctly when mandatory profile fields are omitted. |
 | 3 | **TC-03:** Validate target credit-load boundaries | F-01 / FR-01 / U001 | Verify acceptance of 14 and 24 credits, and rejection of 13 and 25 credits. |
-| 4 | **TC-04:** Handle unavailable curriculum mapping | F-01 / FR-01 / U001 | Verify system behavior and warning when no curriculum matches program/intake. |
+| 4 | **TC-04:** Handle unavailable curriculum mapping | F-01 / FR-01 / U001 | Verify the system's behavior and warning message when no curriculum matches the program or intake. |
 | 5 | **TC-05:** Update an existing academic profile | F-01 / FR-01 / U001 | Verify that existing profile fields update cleanly without creating duplicate records. |
 | 6 | **TC-06:** Add a valid Passed course attempt | F-02 / FR-02 / U002 | Verify that a passed attempt contributes to earned credits and prerequisite satisfaction. |
 | 7 | **TC-07:** Record Failed and InProgress attempts | F-02 / FR-02 / U002 | Verify that failed and in-progress attempts do not grant credits or satisfy prerequisites. |
@@ -21,7 +21,7 @@
 | 17 | **TC-17:** Validate satisfied prerequisites | F-05 / FR-07 / U003 | Verify course eligibility when required prerequisites have Passed attempts. |
 | 18 | **TC-18:** Validate unsatisfied prerequisite checks | F-05 / FR-07 / U003 | Verify ineligible status for failed, in-progress, or unattempted prerequisites. |
 | 19 | **TC-19:** Handle uncertain prerequisite data | F-05 / FR-07 / U003 | Verify warning generation when prerequisite definitions are incomplete. |
-| 20 | **TC-20:** Validate course offering availability | F-04 / FR-06 / U003 | Verify section lookup for offered courses and handling of unoffered courses in a term. |
+| 20 | **TC-20:** Validate course offering availability | F-04 / FR-06 / U003 | Verify that section lookup succeeds for offered courses and that unoffered courses in a term are handled correctly. |
 | 21 | **TC-21:** Login success | RBAC / SCR-01 | Verify successful authentication and routing to Student/Advisor/Admin dashboards. |
 | 22 | **TC-22:** Login failed | RBAC / SCR-01 | Verify that invalid credentials display an error and deny dashboard access. |
 | 23 | **TC-23:** Reset password | RBAC / SCR-01 | Verify that password reset mechanisms handle forgot-password requests. |
@@ -30,9 +30,9 @@
 | 26 | **TC-26:** Provide plan feedback comments | FR-15 / U004 / SCR-09 | Verify an advisor can submit feedback comments attached to a plan. |
 | 27 | **TC-27:** Approve suitable study plans | FR-15 / U004 / SCR-09 | Verify that an advisor can mark a plan as Approved and update its state. |
 | 28 | **TC-28:** Request study plan revision | FR-15 / U004 / SCR-09 | Verify that an advisor can set a plan to Revision Requested with mandatory comment. |
-| 29 | **TC-29:** Record fallback execution actions | FR-17 / NFR-07 / C10 | Verify fallback activation and logging when the external AI provider is unreachable. |
+| 29 | **TC-29:** Record fallback execution actions | FR-17 / NFR-07 / C10 | Verify that fallback activation and logging occur when the external AI provider is unreachable. |
 | 30 | **TC-30:** Save study plan as Draft | FR-22 / C8 / SCR-06 | Verify a student can save an unsubmitted plan in Draft status. |
 | 31 | **TC-31:** Submit Draft plan for review | FR-22 / C8 / SCR-06 | Verify transition of a plan from Draft to PendingReview status in advisor queue. |
 | 32 | **TC-32:** View plan version history | FR-23 / SCR-07 | Verify a student can view chronological history of all saved and submitted plans. |
 | 33 | **TC-33:** View review status and decisions | FR-23 / SCR-02 / SCR-07 | Verify student UI displays advisor approval or revision decision with comments. |
-| 34 | **TC-34:** Create new revision without overwriting| FR-23 / C8 / U004 | Verify that revising a plan creates a new draft version without deleting old records. |
+| 34 | **TC-34:** Create new revision without overwriting | FR-23 / C8 / U004 | Verify that revising a plan creates a new draft version without deleting old records. |

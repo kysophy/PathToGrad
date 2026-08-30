@@ -5,7 +5,7 @@ Canonical inputs for the demo database. **Do not hand-edit the CSV files.** Chan
 | File | Role |
 |---|---|
 | `Courses.csv` | Normalized curriculum (GEN + specializations) |
-| `offerings.csv` | Synthetic timetable for demo term `2026.1` (`term_type = Semester2`; covers GEN semesters 2, 5 and SE semester 8 — see C-01 in `DECISIONS.md`) |
+| `offerings.csv` | Synthetic timetable for demo term `2026.1` (`term_type = Semester2`; covers GEN semesters 2, 5 and SE semester 8; see C-01 in `DECISIONS.md`) |
 | `prepare_curriculum.py` | Builds `Courses.csv` from `Materials and Notes/Courses.raw.csv` (that raw dump is local, not in git) |
 | `generate_offerings.py` | Builds `offerings.csv` from `Courses.csv` |
 

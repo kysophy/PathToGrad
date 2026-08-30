@@ -31,6 +31,12 @@ python -m app.scripts.import_courses
 
 `import_courses` reads `PathToGrad/data/Courses.csv` and `PathToGrad/data/offerings.csv`. It expects seed rows `CURR-TEST-2024` and term name `2026.1`. To regenerate those CSVs, see [`../../data/README.md`](../../data/README.md).
 
+Optional testing seed data (five demo students covering specific engine scenarios: soft-lock top-up, backlog, failed retakes, over-cap deferral, and near-graduation) lives in `../database/seed_demo_students.sql`. Load it the same way, after `seed.sql`:
+
+```powershell
+Get-Content ..\database\seed_demo_students.sql | docker exec -i pathtograd-mysql mysql -uroot -ppathtograd pathtograd
+```
+
 ## Run
 
 ```powershell
@@ -48,10 +54,10 @@ pytest
 
 ## Layout
 
-- `app/api/` — HTTP routes
-- `app/services/` — use-case logic
-- `app/repositories/` — SQLAlchemy access
-- `app/models/` — tables
-- `app/deterministic/` — graduation progress and prerequisite rules
-- `app/scripts/import_courses.py` — CSV loader
-- `alembic/versions/` — schema migrations (source of truth)
+- `app/api/`: HTTP routes
+- `app/services/`: use-case logic
+- `app/repositories/`: SQLAlchemy access
+- `app/models/`: tables
+- `app/deterministic/`: graduation progress and prerequisite rules
+- `app/scripts/import_courses.py`: CSV loader
+- `alembic/versions/`: schema migrations (source of truth)

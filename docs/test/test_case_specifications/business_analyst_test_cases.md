@@ -53,14 +53,14 @@ Boundary-value testing is applied to fields with documented limits, specifically
 *   **TC-01 Create a valid academic profile:** Verify that a complete and valid academic profile (Faculty, Program, Track, Intake, Semester, Target Credit Load) can be saved successfully.
 *   **TC-02 Reject missing required profile information:** Verify that omitting a mandatory field rejects the profile save and displays a clear validation message.
 *   **TC-03 Validate target credit-load boundaries:** Verify that values 14 and 24 are accepted, while values 13 and 25 are rejected with a credit-load policy error.
-*   **TC-04 Handle unavailable curriculum mapping:** Verify system behavior and warning generation when no curriculum matches the selected program and intake year.
+*   **TC-04 Handle unavailable curriculum mapping:** Verify the system's behavior and warning generation when no curriculum matches the selected program and intake year.
 *   **TC-05 Update an existing academic profile:** Verify that valid profile information can be updated in-place without creating a duplicate profile.
 *   **TC-06 Add a valid Passed course attempt:** Verify that a valid Passed attempt is saved, added to completed courses, and increments earned credits.
 *   **TC-07 Record Failed and InProgress attempts:** Verify that Failed and InProgress attempts are stored but do not contribute to completed courses or earned credits.
 *   **TC-08 Reject an unknown course:** Verify validation blocks submission when an entered course does not exist in the course catalog.
-*   **TC-09 Reject missing grade or credit information:** Verify validation failure and user prompting when required course-attempt information (grade or credits) is incomplete.
+*   **TC-09 Reject missing grade or credit information:** Verify that validation fails and the user is prompted when required course-attempt information (grade or credits) is incomplete.
 
 ### 5.2 Authentication & Roles
 *   **TC-21 Login success:** Verify that a user with each role (Student, Advisor, Admin) can successfully log in and access their respective dashboards.
-*   **TC-22 Login Failed:** Verify that incorrect login information throws a clear error and denies dashboard access.
-*   **TC-23 Forget password:** Verify that the system successfully handles the reset password workflow via email verification code.
+*   **TC-22 Login failed:** Verify that incorrect login information displays a clear error and denies dashboard access.
+*   **TC-23 Forgot password:** Verify that the system successfully handles the reset password workflow via email verification code.

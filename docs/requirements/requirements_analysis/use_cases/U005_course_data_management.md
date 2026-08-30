@@ -2,13 +2,13 @@
 
 ## 1. Use Case Information
 
-| Field                          | Description                                                                 |
-| ------------------------------ | --------------------------------------------------------------------------- |
-| Use Case ID                    | U005                                                              |
-| Use Case Name                  | Course Data & Prerequisite Management                             |
-| Actor                          | Academic Staff / Admin                                            |
-| Related Functional Requirement | FR-16                                                             |
-| Related Feature                | F-12 Course Data Management                                       |
+| Field                              | Description                           |
+| ---------------------------------- | ---------------------------------------- |
+| Use Case ID                       | U005                                  |
+| Use Case Name                     | Course Data & Prerequisite Management |
+| Actor(s)                          | Academic Staff / Admin                |
+| Related Functional Requirement(s) | FR-16                                 |
+| Related Feature(s)                | F-12 Course Data Management           |
 
 ## 2. Brief Description
 
@@ -33,11 +33,17 @@ Allows Academic Staff to maintain the university's course catalog by importing C
 
 ## 6. Alternative Scenarios
 
-### A1. Invalid Data Format or Logic Conflict
+### A1. Invalid data format or logic conflict
+
 1. In step 3, if the system detects circular dependencies (e.g., Course A requires B, B requires A) or missing required fields, it halts the import.
-2. The system highlights the specific rows with errors. 
+2. The system highlights the specific rows with errors.
 3. The system prompts the Admin to fix them before proceeding.
 
-### A2. API Update
+### A2. API update
+
 1. Instead of a CSV upload in step 2, the Admin pushes an update via the Admin API.
 2. The system performs the same validation (step 3) and returns a JSON success or error response.
+
+## 7. Non-Functional Constraints
+
+- No use case-specific non-functional constraints were documented for this use case in the source requirements; the system-wide non-functional requirements (NFR-01 to NFR-09 in the Non-Functional Requirements Specification) still apply, including data protection and role-based access control.

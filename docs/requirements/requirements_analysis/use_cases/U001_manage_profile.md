@@ -2,13 +2,13 @@
 
 ## 1. Use Case Information
 
-| Field                          | Description                |
-| ------------------------------ | -------------------------- |
-| Use Case ID                    | U001                       |
-| Use Case Name                  | Manage Profile             |
-| Actor                          | Student                    |
-| Related Functional Requirement | FR-01                      |
-| Related Feature                | Student Profile Management |
+| Field                              | Description                     |
+| ---------------------------------- | -------------------------------- |
+| Use Case ID                       | U001                            |
+| Use Case Name                     | Manage Profile                  |
+| Actor(s)                          | Student                         |
+| Related Functional Requirement(s) | FR-01                           |
+| Related Feature(s)                | F-01 Student Profile Management |
 
 ## 2. Brief Description
 
