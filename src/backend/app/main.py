@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from app.api import (
     academic_planning,
     academic_record,
+    auth,
     meta,
     profile,
     course_catalog,
@@ -21,6 +22,10 @@ def health_check():
         "status": "ok",
     }
 
+
+app.include_router(
+    auth.router
+)
 
 app.include_router(
     meta.router

@@ -20,7 +20,7 @@ npm run preview  # serve that bundle locally
 
 ## Demo login
 
-On the login screen, student ID `test` (any password) signs in as a Student without calling `/api/auth/login`. Real role-based login still expects that endpoint.
+On the login screen, student ID `test` (any password) signs in as `TEST001` without calling `/api/auth/login`. Any other student ID from the seed data (for example `DEMO-CAP`, password `NOT_USED_DAY1`) calls the real endpoint and loads that student instead: `CURRENT_STUDENT_ID` in `services/session.ts` is set from the login response, not hardcoded. Advisor/Admin role-based login is still out of scope.
 
 ## Layout
 

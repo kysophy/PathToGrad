@@ -42,7 +42,7 @@ npm run dev
 
 Open the URL Vite prints (usually `http://localhost:5173`). Health check: `http://localhost:8000/api/health`. Database UI: `http://localhost:8080` (system: MySQL, server: `mysql`, user: `root`, password: `pathtograd`).
 
-Login shortcut on the current UI: student ID `test` (any password). That bypasses `/api/auth/login`, which is not implemented yet.
+Login shortcut on the current UI: student ID `test` (any password) always signs in as `TEST001` without a backend call. For any other student, `/api/auth/login` is implemented: log in with a student ID from `seed.sql` or `seed_demo_students.sql` (for example `DEMO-CAP`) and the seeded password `NOT_USED_DAY1`; the app then loads that student's real data instead of `TEST001`. Advisor/Admin role-based login is still out of scope (FR-18).
 
 ## Day-to-day
 

@@ -39,6 +39,11 @@ class StudentRepository:
     def get_user(self, user_id: str) -> User | None:
         return self.session.get(User, user_id)
 
+    def get_user_by_email(self, email: str) -> User | None:
+        return self.session.scalar(
+            select(User).where(User.email == email)
+        )
+
     def get_class_group(self, class_id: str) -> ClassGroup | None:
         return self.session.get(ClassGroup, class_id)
 

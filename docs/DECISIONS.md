@@ -157,3 +157,21 @@ The database unique on `study_plan_item` is `(plan_id, section_id)`. A-16 refuse
 
 `CoursePrimaryStatus` has no Completed value. A passed mandatory course that cannot be retaken this term is labelled **Future** so it does not appear in Recommended (Assigned + Backlog).
 
+---
+
+## 2026-09-02: Minimal real login (partial FR-18)
+
+### `/api/auth/login` now resolves against seeded users, not just `TEST001`
+
+The frontend previously had one working student (`TEST001`) because `CURRENT_STUDENT_ID` in `services/session.ts` was a hardcoded constant that every service imported. `POST /api/auth/login` (`AuthService.login`) now looks up the identifier as a `student_id` first, falling back to a `users.email` match for non-student accounts, and checks the stored password and `account_status`. `session.ts` exports `CURRENT_STUDENT_ID` as a live binding (`export let`, persisted to `localStorage`) plus a `setCurrentStudentId` setter; `Login.tsx` calls that setter with the `student_id` the backend returns on success. Any seeded student (`seed.sql`'s `TEST001`, or any of the five in `seed_demo_students.sql`) can now log in with their student ID and the seed password `NOT_USED_DAY1`.
+
+The `test` / any-password shortcut on the login screen is unchanged and still bypasses the backend entirely, signing in as `TEST001` directly; it exists for quick local iteration, not as the primary path.
+
+### Passwords are compared as stored, not hashed
+
+All seed data uses the placeholder password `NOT_USED_DAY1` and `User.password` has no hashing anywhere in the codebase. `AuthService.login` compares it as a plain string. This is dev/demo-scope only, real hashing is still open work before this could be a real login.
+
+### Advisor/Admin session data is still out of scope
+
+`LoginResponse.student_id` is `null` for a non-student login; the frontend does not yet do anything role-specific with that response beyond routing to the right dashboard shell. Advisor/Admin data loading is not part of this change.
+

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../utils/AuthContext'; 
+import { useAuth } from '../utils/AuthContext';
+import { setCurrentStudentId } from '../services/session';
 
 import NotebookPage from "../components/NotebookPage";
 import Doodle from "../components/Doodle";
@@ -37,6 +38,7 @@ export default function Login() {
     setError('');
 
     if (studentId === "test") {
+      setCurrentStudentId("TEST001");
       login({
         id: "pathtograd",
         name: "Test User",
@@ -47,11 +49,12 @@ export default function Login() {
     }
 
     try {
-      // Send credentials to Dev D's backend API
+      // Real login: resolves against the seeded users / student_profile
+      // tables, so this works for any seeded student, not just TEST001.
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier: studentId, password }), 
+        body: JSON.stringify({ identifier: studentId, password }),
       });
 
       if (!response.ok) {
@@ -59,11 +62,15 @@ export default function Login() {
       }
 
       // Extract the JSON body to find out the role
-      const data = await response.json(); 
+      const data = await response.json();
+
+      if (data.role === 'Student' && data.student_id) {
+        setCurrentStudentId(data.student_id);
+      }
 
       const userData = {
         role: data.role,
-        id: studentId, 
+        id: data.student_id || studentId,
         name: data.name || "Student",
       };
 
