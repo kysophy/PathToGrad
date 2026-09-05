@@ -1,5 +1,5 @@
 import { apiRequest } from './api';
-import { CURRENT_STUDENT_ID } from './session';
+import { getCurrentStudentId } from './session';
 
 export type UpcomingPlan = {
   id: string;
@@ -41,20 +41,22 @@ type ProfileApiResponse = {
  */
 type GraduationProgressApiResponse = {
   student_id: string;
-
-  required_credits: number;
   earned_credits: number;
+  required_credits: number;
   remaining_credits: number;
-
   mandatory_passed: boolean;
   credit_requirement_met: boolean;
-
   missing_required_courses: string[];
-
   gpa: number | null;
-
   completed: boolean;
 };
+
+function creditProgressPercent(earned: number, required: number): number {
+  if (required <= 0) {
+    return 100;
+  }
+  return Math.min(100, Math.round((earned / required) * 10000) / 100);
+}
 
 /**
  * DashboardData
@@ -127,20 +129,14 @@ export const PLACEHOLDER_DASHBOARD_EXTRAS: Required<
 
 export async function getDashboardData(): Promise<DashboardData> {
   const [profile, progress] = await Promise.all([
-    apiRequest<ProfileApiResponse>(`/api/students/${CURRENT_STUDENT_ID}/profile`),
+    apiRequest<ProfileApiResponse>(`/api/students/${getCurrentStudentId()}/profile`),
     apiRequest<GraduationProgressApiResponse>(
-      `/api/students/${CURRENT_STUDENT_ID}/graduation-progress`,
+      `/api/students/${getCurrentStudentId()}/graduation-progress`,
     ),
   ]);
 
-  const graduationPercent =
-    progress.required_credits > 0
-      ? Math.min(100, Math.round((progress.earned_credits / progress.required_credits) * 100))
-      : 0;
-
   return {
     ...PLACEHOLDER_DASHBOARD_EXTRAS,
-    ...(progress.gpa !== null ? { currentGPA: progress.gpa } : {}),
 
     studentId: profile.student_id,
 
@@ -153,10 +149,15 @@ export async function getDashboardData(): Promise<DashboardData> {
     requiredCredits: progress.required_credits,
     remainingCredits: progress.remaining_credits,
 
-    graduationPercent,
+    graduationPercent: creditProgressPercent(
+      progress.earned_credits,
+      progress.required_credits,
+    ),
     graduationCompleted: progress.completed,
 
     mandatoryPassed: progress.mandatory_passed,
-    missingRequiredCourses: progress.missing_required_courses,
+    missingRequiredCourses: progress.missing_required_courses ?? [],
+
+    currentGPA: progress.gpa ?? PLACEHOLDER_DASHBOARD_EXTRAS.currentGPA,
   };
 }

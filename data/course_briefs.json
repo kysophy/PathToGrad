@@ -1,0 +1,248 @@
+{
+  "CSC00004": {
+    "name_en": "Introduction to Information Technology",
+    "name_vi": "Nhập môn Công nghệ thông tin",
+    "credits": 4,
+    "brief": "A first-year survey of how computers, programs, and networks fit together. Expect lab hours, basic terminology, and enough context to start Programming Fundamentals. Illustrative note, not the official syllabus."
+  },
+  "CSC10012": {
+    "name_en": "Programming Fundamentals",
+    "name_vi": "Cơ sở lập trình",
+    "credits": 4,
+    "brief": "First real coding course: variables, control flow, functions, and simple data. Later courses such as CSC10004 assume you can write and debug small programs here. Illustrative note, not the official syllabus."
+  },
+  "MTH00009": {
+    "name_en": "Discrete Mathematics",
+    "name_vi": "Toán rời rạc",
+    "credits": 4,
+    "brief": "Logic, sets, proofs, and counting that CS arguments rest on. Combinatorics and several programming courses reuse this language. Illustrative note, not the official syllabus."
+  },
+  "CSC10121": {
+    "name_en": "Soft Skills",
+    "name_vi": "Kỹ năng mềm",
+    "credits": 3,
+    "brief": "Presentation, teamwork, and academic communication for FIT students. Expect speaking and group work rather than a heavy coding load. Illustrative note, not the official syllabus."
+  },
+  "CSC10004": {
+    "name_en": "Data Structures and Algorithms",
+    "name_vi": "Cấu trúc dữ liệu và giải thuật",
+    "credits": 4,
+    "brief": "Lists, stacks, trees, graphs, and the complexity of common algorithms. It sits on CSC10012 and is a gate for later core CS. Expect programming assignments, not only proofs. Illustrative note, not the official syllabus."
+  },
+  "MTH00058": {
+    "name_en": "Combinatorics",
+    "name_vi": "Toán học tổ hợp",
+    "credits": 4,
+    "brief": "Counting, recurrences, and combinatorial arguments after Discrete Mathematics. Useful when algorithms need exact counts rather than intuition. Illustrative note, not the official syllabus."
+  },
+  "PHY00005": {
+    "name_en": "General Physics 1",
+    "name_vi": "Vật lý đại cương 1",
+    "credits": 4,
+    "brief": "Mechanics-style general physics used as a foundation elective in this demo. Later Physics for IT builds on it. Illustrative note, not the official syllabus."
+  },
+  "BAA00004": {
+    "name_en": "General Law",
+    "name_vi": "Pháp luật đại cương",
+    "credits": 3,
+    "brief": "A general-education law course. It does not teach programming; it fills elective slots in the GEN block. Illustrative note, not the official syllabus."
+  },
+  "CSC10003": {
+    "name_en": "Object-Oriented Programming Methodology",
+    "name_vi": "Phương pháp lập trình hướng đối tượng",
+    "credits": 4,
+    "brief": "Classes, objects, and design habits after data structures. Several SE courses (web, Java, Windows) list it as a prerequisite. Illustrative note, not the official syllabus."
+  },
+  "CSC10009": {
+    "name_en": "Computer Systems",
+    "name_vi": "Hệ thống máy tính",
+    "credits": 2,
+    "brief": "How hardware and low-level software meet: representation, simple architecture, and system view. Networks and operating systems sit on top of it. Illustrative note, not the official syllabus."
+  },
+  "MTH00005": {
+    "name_en": "Calculus 1",
+    "name_vi": "Vi tích phân 1",
+    "credits": 4,
+    "brief": "Limits, derivatives, and integrals at university level. Calculus 2 and probability assume this fluency. Illustrative note, not the official syllabus."
+  },
+  "MTH00008": {
+    "name_en": "Linear Algebra",
+    "name_vi": "Đại số tuyến tính",
+    "credits": 4,
+    "brief": "Vectors, matrices, and linear systems. Later applied math and AI courses reuse this toolkit. Illustrative note, not the official syllabus."
+  },
+  "CSC10014": {
+    "name_en": "Computational Thinking",
+    "name_vi": "Tư duy tính toán",
+    "credits": 4,
+    "brief": "Problem decomposition and algorithm-style reasoning after programming and discrete math. Expect puzzles and structured solutions more than a single language. Illustrative note, not the official syllabus."
+  },
+  "CSC10008": {
+    "name_en": "Computer Networks",
+    "name_vi": "Mạng máy tính",
+    "credits": 4,
+    "brief": "Layers, addressing, and how packets move, after Computer Systems. Later SE and systems electives assume this vocabulary. Illustrative note, not the official syllabus."
+  },
+  "MTH00006": {
+    "name_en": "Calculus 2",
+    "name_vi": "Vi tích phân 2",
+    "credits": 4,
+    "brief": "Multivariable and further calculus after Calculus 1. Keep it if you still need the GEN math spine. Illustrative note, not the official syllabus."
+  },
+  "BAA00005": {
+    "name_en": "General Economics",
+    "name_vi": "Kinh tế đại cương",
+    "credits": 2,
+    "brief": "A short general-education economics course. Useful as a light elective fill, not a CS core. Illustrative note, not the official syllabus."
+  },
+  "BAA00021": {
+    "name_en": "Physical Education 1",
+    "name_vi": "Thể dục 1",
+    "credits": 2,
+    "brief": "First PE unit in the GEN block. Physical Education 2 lists it as a prerequisite. Illustrative note, not the official syllabus."
+  },
+  "BAA00030": {
+    "name_en": "National Defense Education",
+    "name_vi": "Giáo dục quốc phòng",
+    "credits": 4,
+    "brief": "National defense education block. It is scheduled like other GEN courses in this demo even though the teaching format differs on campus. Illustrative note, not the official syllabus."
+  },
+  "CSC10006": {
+    "name_en": "Databases",
+    "name_vi": "Cơ sở dữ liệu",
+    "credits": 4,
+    "brief": "Relational modeling, SQL, and why schema design matters. Web development in the SE track lists it beside OOP. Illustrative note, not the official syllabus."
+  },
+  "CSC10007": {
+    "name_en": "Operating Systems",
+    "name_vi": "Hệ điều hành",
+    "credits": 4,
+    "brief": "Processes, memory, and files after Computer Systems. Expect both concepts and practical exercises. Illustrative note, not the official syllabus."
+  },
+  "MTH00007": {
+    "name_en": "Probability and Statistics",
+    "name_vi": "Xác suất thống kê",
+    "credits": 4,
+    "brief": "Random variables, distributions, and basic inference after Calculus 1. AI and applied math for IT list it as a prerequisite. Illustrative note, not the official syllabus."
+  },
+  "BAA00022": {
+    "name_en": "Physical Education 2",
+    "name_vi": "Thể dục 2",
+    "credits": 2,
+    "brief": "Second PE unit; it needs Physical Education 1. Treat it as a scheduled GEN course in the planner. Illustrative note, not the official syllabus."
+  },
+  "PHY00007": {
+    "name_en": "Physics for Information Technology",
+    "name_vi": "Vật lý cho Công nghệ thông tin",
+    "credits": 4,
+    "brief": "Physics topics aimed at IT after General Physics 1. Elective in this demo GEN block. Illustrative note, not the official syllabus."
+  },
+  "CSC14003": {
+    "name_en": "Fundamentals of Artificial Intelligence",
+    "name_vi": "Cơ sở trí tuệ nhân tạo",
+    "credits": 4,
+    "brief": "Search, knowledge, and introductory AI ideas after OOP and probability. It is a GEN core course here, not a licence to quote model trivia. Illustrative note, not the official syllabus."
+  },
+  "MTH00057": {
+    "name_en": "Applied Mathematics and Statistics for IT",
+    "name_vi": "Toán ứng dụng và thống kê cho Công nghệ thông tin",
+    "credits": 4,
+    "brief": "Applied linear algebra and statistics for IT problems after MTH00007 and MTH00008. Expect computation more than pure theory. Illustrative note, not the official syllabus."
+  },
+  "BAA00003": {
+    "name_en": "Ho Chi Minh Ideology",
+    "name_vi": "Tư tưởng Hồ Chí Minh",
+    "credits": 2,
+    "brief": "Required political theory unit in the GEN block. The planner treats it as a normal catalog row. Illustrative note, not the official syllabus."
+  },
+  "CSC13002": {
+    "name_en": "Introduction to Software Engineering",
+    "name_vi": "Nhập môn công nghệ phần mềm",
+    "credits": 4,
+    "brief": "How teams specify, build, and check software, after OOP. Most SE-8 and SE-9 courses hang off this one. Illustrative note, not the official syllabus."
+  },
+  "CSC13008": {
+    "name_en": "Web Application Development",
+    "name_vi": "Phát triển ứng dụng web",
+    "credits": 4,
+    "brief": "Building web apps after OOP and databases. Expect HTTP, a backend stack, and a small project. Illustrative note, not the official syllabus."
+  },
+  "CSC13102": {
+    "name_en": "Java Application Programming",
+    "name_vi": "Lập trình ứng dụng Java",
+    "credits": 4,
+    "brief": "Application programming in Java after OOP. Useful if later mobile or Windows work needs the same object habits. Illustrative note, not the official syllabus."
+  },
+  "BAA00101": {
+    "name_en": "Marxist-Leninist Philosophy",
+    "name_vi": "Triết học Mác - Lênin",
+    "credits": 3,
+    "brief": "Political theory unit shared across specializations. BAA00102 lists it as a prerequisite. Illustrative note, not the official syllabus."
+  },
+  "CSC13005": {
+    "name_en": "Software Requirements Analysis and Management",
+    "name_vi": "Phân tích và quản lý yêu cầu phần mềm",
+    "credits": 4,
+    "brief": "Turning stakeholder needs into managed requirements after Intro to SE. Expect documents and reviews, not only code. Illustrative note, not the official syllabus."
+  },
+  "CSC13009": {
+    "name_en": "Mobile Software Development",
+    "name_vi": "Phát triển phần mềm cho thiết bị di động",
+    "credits": 4,
+    "brief": "Mobile app construction after OOP and Intro to SE. Expect a small device-side project. Illustrative note, not the official syllabus."
+  },
+  "CSC13001": {
+    "name_en": "Windows Programming",
+    "name_vi": "Lập trình Windows",
+    "credits": 4,
+    "brief": "Desktop Windows programming after OOP. In the demo term it may have no offering — the engine will drop it from a plan even though this brief still describes it. Illustrative note, not the official syllabus."
+  },
+  "CSC13010": {
+    "name_en": "Software Design",
+    "name_vi": "Thiết kế phần mềm",
+    "credits": 4,
+    "brief": "Architecture-level design after Intro to SE and OOP. Testing and architecture courses later expect this. Illustrative note, not the official syllabus."
+  },
+  "BAA00102": {
+    "name_en": "Marxist-Leninist Political Economy",
+    "name_vi": "Kinh tế chính trị Mác - Lênin",
+    "credits": 2,
+    "brief": "Follow-on political theory after BAA00101. Catalog row only in this planner. Illustrative note, not the official syllabus."
+  },
+  "CSC10103": {
+    "name_en": "Entrepreneurship",
+    "name_vi": "Khởi nghiệp",
+    "credits": 3,
+    "brief": "Startup and product thinking near the end of the programme. Shared across specializations in this demo. Illustrative note, not the official syllabus."
+  },
+  "CSC10107": {
+    "name_en": "Practical Internship",
+    "name_vi": "Thực tập thực tế",
+    "credits": 4,
+    "brief": "Workplace internship rather than a lecture course. The planner still treats it as a catalog course with a credit load. Illustrative note, not the official syllabus."
+  },
+  "CSC13003": {
+    "name_en": "Software Testing",
+    "name_vi": "Kiểm thử phần mềm",
+    "credits": 4,
+    "brief": "Test design and quality after Intro to SE and Software Design. Expect test cases, not only running the happy path. Illustrative note, not the official syllabus."
+  },
+  "CSC13006": {
+    "name_en": "Software Project Management",
+    "name_vi": "Quản lý dự án phần mềm",
+    "credits": 4,
+    "brief": "Planning, tracking, and people on a software project after Intro to SE. Complements design and testing rather than replacing them. Illustrative note, not the official syllabus."
+  },
+  "CSC13106": {
+    "name_en": "Software Architecture",
+    "name_vi": "Kiến trúc phần mềm",
+    "credits": 4,
+    "brief": "Larger structure of systems after Intro to SE and Software Design. Expect quality attributes and trade-offs. Illustrative note, not the official syllabus."
+  },
+  "CSC13112": {
+    "name_en": "Interface Design",
+    "name_vi": "Thiết kế giao diện",
+    "credits": 4,
+    "brief": "UI structure and interaction after Intro to SE and OOP. Complements web and mobile courses on the SE track. Illustrative note, not the official syllabus."
+  }
+}

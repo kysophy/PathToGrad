@@ -75,6 +75,8 @@ export interface StudyPlanData {
   timetable: TimetableDay[];
   risks: AcademicRisk[];
   recommendedCourses: RecommendedCourse[];
+  explanation?: string;
+  explanationSource?: "llm" | "template";
 }
 
 export interface StudyPlanProps {
@@ -328,6 +330,13 @@ export default function StudyPlan({
           <CurrentPlanPanel status={planData.status} courses={planData.courses} />
         </div>
 
+        {planData.explanation ? (
+          <ExplanationCard
+            explanation={planData.explanation}
+            source={planData.explanationSource}
+          />
+        ) : null}
+
         {/* -------------------------------------------------------------
             Row 2 — Weekly timetable, full width
         -------------------------------------------------------------- */}
@@ -488,14 +497,21 @@ function CurrentPlanPanel({ status, courses }: CurrentPlanPanelProps) {
     <section className="relative flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-neutral-200">
       <div className="flex items-start justify-between gap-4">
         <h2 className="font-patrick-hand text-3xl">Current plan</h2>
-        <span
-          className={cn(
-            "rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide",
-            planStatusStyles(status),
-          )}
-        >
-          {status}
-        </span>
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          {courses.length > 0 ? (
+            <span className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-neutral-600">
+              Engine plan
+            </span>
+          ) : null}
+          <span
+            className={cn(
+              "rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide",
+              planStatusStyles(status),
+            )}
+          >
+            {status}
+          </span>
+        </div>
         {/* Decorative star cluster: overlaps the corner via negative
             margins + rotation rather than absolute positioning, so it
             stays part of normal document flow. */}
@@ -634,6 +650,29 @@ function RiskPanel({ risks }: RiskPanelProps) {
 
 interface RecommendedPanelProps {
   recommended: RecommendedCourse[];
+}
+
+function ExplanationCard({
+  explanation,
+  source,
+}: {
+  explanation: string;
+  source?: "llm" | "template";
+}) {
+  const label = source === "llm" ? "Gemini explanation" : "Template explanation";
+  return (
+    <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-neutral-200">
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <h2 className="font-patrick-hand text-2xl">Why this plan</h2>
+        <span className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-neutral-600">
+          {label}
+        </span>
+      </div>
+      <p className="font-nunito whitespace-pre-wrap text-sm leading-relaxed text-neutral-700">
+        {explanation}
+      </p>
+    </section>
+  );
 }
 
 function RecommendedPanel({ recommended }: RecommendedPanelProps) {

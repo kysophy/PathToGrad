@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../utils/AuthContext'; 
+import { useAuth } from '../utils/AuthContext';
+import { lookupDevLogin, setDevSession } from '../services/session'; 
 
 import NotebookPage from "../components/NotebookPage";
 import Doodle from "../components/Doodle";
@@ -36,10 +37,12 @@ export default function Login() {
     e.preventDefault(); 
     setError('');
 
-    if (studentId === "test") {
+    const cheat = lookupDevLogin(studentId);
+    if (cheat) {
+      setDevSession(cheat.studentId, cheat.userId);
       login({
-        id: "pathtograd",
-        name: "Test User",
+        id: cheat.studentId,
+        name: cheat.name,
         role: "Student",
       });
       navigate('/student-dashboard');
@@ -199,6 +202,9 @@ export default function Login() {
               >
                 Forgot password
               </a>
+              <p className="mt-2 max-w-xs text-center font-body text-xs text-neutral-600">
+                Dev logins (password anything): test, s02, s05, s08, fail, cap
+              </p>
             </div>
           </form>
         </div>

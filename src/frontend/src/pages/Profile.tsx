@@ -16,6 +16,7 @@ import {
   ProgramTrack,
   saveProfile,
 } from '../services/Profile';
+import { getCurrentStudentId } from '../services/session';
 
 
 export default function ProfilePage() {
@@ -230,7 +231,7 @@ export default function ProfilePage() {
         </h1>
 
         <p className="mt-1 font-body text-sm">
-          Student ID: TEST001
+          Student ID: {getCurrentStudentId()}
         </p>
 
 

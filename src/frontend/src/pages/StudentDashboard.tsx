@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import StudentDashboard from '../components/StudentDashboardPage';
 import { getDashboardData } from '../services/Dashboard';
+import { getCurrentStudentId } from '../services/session';
 
 export default function StudentDashboardPage() {
   const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ['dashboard'],
+    queryKey: ['dashboard', getCurrentStudentId()],
     queryFn: getDashboardData,
   });
 

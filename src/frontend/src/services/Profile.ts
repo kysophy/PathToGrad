@@ -1,6 +1,5 @@
 import { apiRequest } from './api';
-import { 
-CURRENT_STUDENT_ID, CURRENT_USER_ID } from './session';
+import { getCurrentStudentId, getCurrentUserId } from './session';
 
 
 export type Faculty = {
@@ -95,7 +94,7 @@ export function getCurriculum(
 
 export function getProfile() {
   return apiRequest<ProfileResponse>(
-    `/api/students/${CURRENT_STUDENT_ID}/profile`,
+    `/api/students/${getCurrentStudentId()}/profile`,
   );
 }
 
@@ -104,12 +103,12 @@ export function saveProfile(
   data: ProfileFormData,
 ) {
   return apiRequest<ProfileResponse>(
-    `/api/students/${CURRENT_STUDENT_ID}/profile`,
+    `/api/students/${getCurrentStudentId()}/profile`,
     {
       method: 'PUT',
 
       body: JSON.stringify({
-        user_id: CURRENT_USER_ID,
+        user_id: getCurrentUserId(),
         ...data,
       }),
     },

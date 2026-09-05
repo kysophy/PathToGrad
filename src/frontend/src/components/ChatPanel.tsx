@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, type FormEvent } from 'react';
 import arrow from '../assets/Arrow 1.svg';
+import { chatWithAgent } from '../services/Agent';
 
 /** Minimal inline icons — no icon package dependency. These are plain UI
  * chrome (not Figma doodles), so they're written directly as SVG rather
@@ -39,27 +40,6 @@ function PlusIcon({ className = '' }: { className?: string }) {
       <line x1="5" y1="12" x2="19" y2="12" />
     </svg>
   );
-}
-
-// --- Fallback Logic ---
-/**
- * Generates a mock response when the backend API cannot be reached.
- * Allows testing the UI without waiting for the backend to be online.
- */
-function getFallbackResponse(userInput: string): string {
-  const input = userInput.toLowerCase();
-  
-  if (input.includes('hello') || input.includes('hi')) {
-    return "(Offline Mode) Hi there! The backend is currently asleep, but I'm here to help you test the UI. What courses are you planning to take?";
-  }
-  if (input.includes('course') || input.includes('plan') || input.includes('generate')) {
-    return "(Offline Mode) I recommend adding 'Data Structures' to your plan. Try using the form on the left to generate a schedule!";
-  }
-  if (input.includes('prerequisite') || input.includes('risk')) {
-    return "(Offline Mode) Warning: Ensure you have completed Programming Fundamentals before taking advanced courses. Check the risk warnings on your plan.";
-  }
-  
-  return `(Offline Mode) I received: "${userInput}". The backend API is currently disconnected, so this is an automated fallback response!`;
 }
 
 /**
@@ -131,15 +111,7 @@ export default function ChatPanel() {
     setIsTyping(true);
 
     try {
-      // 2. Call the backend API
-      const response = await fetch('/api/agent/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: trimmed }),
-      });
-
-      if (!response.ok) throw new Error("Agent API failed");
-      const data = await response.json();
+      const data = await chatWithAgent(trimmed);
 
       // 3. Append the assistant's response to the active session
       setSessions((prev) =>
@@ -147,32 +119,40 @@ export default function ChatPanel() {
           s.id === activeSessionId
             ? {
                 ...s,
-                messages: [...s.messages, { id: crypto.randomUUID(), role: 'assistant', text: data.reply || "I've received your request." }],
+                messages: [
+                  ...s.messages,
+                  {
+                    id: crypto.randomUUID(),
+                    role: 'assistant',
+                    text: data.reply || "I've received your request.",
+                  },
+                ],
               }
             : s,
         ),
       );
-      
+
       setIsTyping(false);
     } catch (error) {
-      console.warn("Backend unreachable. Triggering UI Fallback Mode...", error);
-      
-      // 4. Fallback Mode: Wait a split second, then add a mock response
-      setTimeout(() => {
-        const fallbackReply = getFallbackResponse(trimmed);
-        
-        setSessions((prev) =>
-          prev.map((s) =>
-            s.id === activeSessionId
-              ? {
-                  ...s,
-                  messages: [...s.messages, { id: crypto.randomUUID(), role: 'assistant', text: fallbackReply }],
-                }
-              : s,
-          ),
-        );
-        setIsTyping(false);
-      }, 800);
+      console.warn("Backend unreachable.", error);
+      setSessions((prev) =>
+        prev.map((s) =>
+          s.id === activeSessionId
+            ? {
+                ...s,
+                messages: [
+                  ...s.messages,
+                  {
+                    id: crypto.randomUUID(),
+                    role: 'assistant',
+                    text: 'The planner is unreachable. Try again when the API is running.',
+                  },
+                ],
+              }
+            : s,
+        ),
+      );
+      setIsTyping(false);
     }
   }
 

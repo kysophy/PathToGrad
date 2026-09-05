@@ -256,6 +256,9 @@ def import_curriculum_courses(
             )
         )
         added += 1
+    # SessionLocal sets autoflush=False, so offerings must see these rows
+    # via SELECT rather than the identity map.
+    db.flush()
     return added
 
 

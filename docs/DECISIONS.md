@@ -157,3 +157,18 @@ The database unique on `study_plan_item` is `(plan_id, section_id)`. A-16 refuse
 
 `CoursePrimaryStatus` has no Completed value. A passed mandatory course that cannot be retaken this term is labelled **Future** so it does not appear in Recommended (Assigned + Backlog).
 
+---
+
+## 2026-09-05: AI / chat contract
+
+The LLM explains a plan; it does not write the plan. Stage 2 (`app/deterministic/`) is the only course list. There is no “Gemini list, keep it if it matches” step.
+
+- Hosted Gemini HTTP adapter (`google-genai`). Not PyTorch, not an agents SDK.
+- Templates + NFR-06 guard ship with an empty `GEMINI_API_KEY`. Live Gemini is stretch.
+- Chat v1 = plan, engine risk, course brief, greet, or refuse. No general Q&A. Single-turn POST. No history on the wire.
+- `data/course_briefs.json` is illustrative; every course answer keeps the disclaimer.
+- Model string is `gemini-2.0-flash` in Settings only. One team key, never committed.
+- Recommended = Assigned + Backlog. Course names in prose are Vietnamese + (English) as in `Courses.csv`.
+- Chat stays in React state. Study Plan semester dropdown is cosmetic; the engine uses `profile.current_semester` + `TERM-2026-1`.
+- `generation_mode` on a **plan** is always engine `Fallback`. On `agent_run` / chat it means “did Gemini answer?”
+

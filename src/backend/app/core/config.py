@@ -14,6 +14,11 @@ class Settings(BaseSettings):
         "mysql+pymysql://root:pathtograd@localhost:3306/pathtograd"
     )
 
+    GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-2.0-flash"
+    GEMINI_TIMEOUT_MS: int = 20000
+    DEFAULT_TERM_ID: str = "TERM-2026-1"
+
 
 @lru_cache
 def get_settings() -> Settings:

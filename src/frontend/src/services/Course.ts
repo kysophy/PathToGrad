@@ -2,9 +2,7 @@ import {
   apiRequest,
 } from './api';
 
-import {
-  CURRENT_STUDENT_ID,
-} from './session';
+import { getCurrentStudentId } from './session';
 
 
 export type AcademicTerm = {
@@ -146,7 +144,7 @@ export async function getCourses(
       CourseCatalogApiItem[]
     >(
       `/api/students/` +
-      `${CURRENT_STUDENT_ID}` +
+      `${getCurrentStudentId()}` +
       `/course-catalog` +
       `?term_id=` +
       `${encodeURIComponent(termId)}`,
@@ -217,7 +215,7 @@ export async function getCourseDetails(
       PrerequisiteCheck
     >(
       `/api/students/` +
-      `${CURRENT_STUDENT_ID}` +
+      `${getCurrentStudentId()}` +
       `/courses/` +
       `${encodedCourse}` +
       `/prerequisites`,
@@ -227,7 +225,7 @@ export async function getCourseDetails(
       CourseEligibility
     >(
       `/api/students/` +
-      `${CURRENT_STUDENT_ID}` +
+      `${getCurrentStudentId()}` +
       `/courses/` +
       `${encodedCourse}` +
       `/eligibility` +
