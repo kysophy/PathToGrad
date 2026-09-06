@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import StudyPlan, {
   type DayOfWeek,
+  type PlannedCourse,
   type StudyPlanData,
   type StudyPlanIntent,
   type TimetableDay,
@@ -11,6 +12,8 @@ import {
   type ExplainedPlanResponse,
   type TimetableSlot,
 } from '../services/Agent';
+
+import { getProfile } from '../services/Profile';
 
 const DAYS: DayOfWeek[] = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
 
@@ -144,6 +147,29 @@ export default function StudyPlanPage() {
     targetCredits: 15,
     noteToAgent: '',
   });
+
+  useEffect(() => {
+    let active = true;
+
+    getProfile()
+      .then((profile) => {
+        if (!active) return;
+
+        setIntent((prev) => ({
+          ...prev,
+          preferredSemester: profile.current_semester,
+          targetCredits: profile.target_credit_load,
+        }));
+      })
+      .catch((error) => {
+        console.error('Could not load profile for study plan:', error);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+  
   const [planData, setPlanData] = useState<StudyPlanData>(EMPTY_PLAN);
   const [isGenerating, setIsGenerating] = useState(false);
 

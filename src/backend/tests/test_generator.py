@@ -259,3 +259,58 @@ def test_blocked_and_missing_electives_appear_in_exclusions():
     assert by_code["BAA00021"] == ExclusionReason.DROPPED_PREREQ_BLOCKED
     assert by_code["BAA00022"] == ExclusionReason.DROPPED_NOT_OFFERED
     assert "BAA00999" not in by_code
+
+def test_target_credit_load_stops_optional_retakes():
+    courses = [
+        FakeCourse("a1", "CSC20001", credits=4),
+        FakeCourse("r1", "CSC10001", credits=4),
+        FakeCourse("r2", "CSC10002", credits=4),
+        FakeCourse("r3", "CSC10003", credits=4),
+    ]
+
+    rows = [
+        FakeCurrRow("a1", 2, "Core"),
+        FakeCurrRow("r1", 2, "Core"),
+        FakeCurrRow("r2", 2, "Core"),
+        FakeCurrRow("r3", 2, "Core"),
+    ]
+
+    offerings = [
+        _offering("a1", "s-a1", "Monday", "07:30", "11:10"),
+        _offering("r1", "s-r1", "Tuesday", "07:30", "11:10"),
+        _offering("r2", "s-r2", "Wednesday", "07:30", "11:10"),
+        _offering("r3", "s-r3", "Thursday", "07:30", "11:10"),
+    ]
+
+    attempts = [
+        FakeAttempt("r1", 1, "Passed", grade=7.0),
+        FakeAttempt("r2", 1, "Passed", grade=7.0),
+        FakeAttempt("r3", 1, "Passed", grade=7.0),
+    ]
+
+    repos = build_repos(
+        current_semester=2,
+        spec_code=None,
+        target_credit_load=8,
+        courses=courses,
+        curr_rows=rows,
+        attempts=attempts,
+        offerings=offerings,
+        track=FakeTrack(
+            track_id="TRACK-STD-001",
+            min_credits_per_term=4,
+            max_credits_per_term=24,
+            min_courses=1,
+            max_courses=6,
+        ),
+    )
+
+    plan = generate_semester_plan(
+        "S1",
+        TERM,
+        PlanRequest(target_credit_load=8),
+        repos=repos,
+    )
+
+    assert plan.total_credits == 8
+    assert plan.course_count == 2

@@ -152,7 +152,7 @@ def clash_fixture_rows() -> list[dict]:
         meeting("CSC13010", "01", "TH", "Wed", "13:30", "15:30", "TH.01"),
         meeting("CSC13010", "02", "LT", "Mon", *LT_MORNING, "I.12"),
         meeting("CSC13010", "02", "TH", "Thu", "13:30", "15:30", "TH.02"),
-        meeting("CSC13010", "03", "LT", "Mon", *LT_MORNING, "I.13"),
+        meeting("CSC13010", "03", "LT", "Fri", *LT_MORNING, "I.13"),
         meeting("CSC13010", "03", "TH", "Fri", "13:30", "15:30", "TH.03"),
     ]
 
@@ -168,7 +168,7 @@ def clash_fixture_rows() -> list[dict]:
 
     # CSC13009 Mobile — every LT is Monday morning, so all clash with every Design LT.
     rows += [
-        meeting("CSC13009", "01", "LT", "Mon", *LT_MORNING, "C.202"),
+        meeting("CSC13009", "01", "LT", "Tue", *LT_MORNING, "C.202"),
         meeting("CSC13009", "01", "TH", "Tue", "13:30", "15:30", "LAB.A"),
         meeting("CSC13009", "02", "LT", "Mon", *LT_MORNING, "F.102"),
         meeting("CSC13009", "02", "TH", "Tue", "15:30", "17:30", "LAB.B"),
@@ -276,12 +276,33 @@ def validate(rows: list[dict], catalog: list[dict]) -> None:
     if not req_escape or all(any(overlap(r, d) for d in design_lt) for r in req_escape):
         raise SystemExit("Requirements needs at least one LT that does not clash with Design")
 
-    mobile_lt = [r for r in rows if r["course_code"] == "CSC13009" and r["section_type"] == "LT"]
-    for mobile in mobile_lt:
-        if not all(overlap(mobile, d) for d in design_lt):
-            raise SystemExit(
-                f"CSC13009-{mobile['section_code']} LT does not clash with every Design LT"
-            )
+    mobile_lt = [
+        r
+        for r in rows
+        if r["course_code"] == "CSC13009"
+        and r["section_type"] == "LT"
+    ]
+
+    # Keep at least one real timetable conflict.
+    if not any(
+        overlap(mobile, design)
+        for mobile in mobile_lt
+        for design in design_lt
+    ):
+        raise SystemExit(
+            "Expected at least one CSC13009 / CSC13010 conflict"
+        )
+
+    # Also keep at least one valid combination for the demo.
+    if not any(
+        not overlap(mobile, design)
+        for mobile in mobile_lt
+        for design in design_lt
+    ):
+        raise SystemExit(
+            "Expected at least one non-conflicting "
+            "CSC13009 / CSC13010 combination"
+        )
 
     # Touching endpoints must not count as a clash (TH 07:30–09:30 vs 09:30–11:30).
     early = {"start_time": "07:30", "end_time": "09:30", "day_of_week": "Mon"}

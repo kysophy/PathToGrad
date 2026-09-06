@@ -44,7 +44,7 @@ const statusStyles: Record<PlanVersionStatus, string> = {
   Draft: "bg-amber-100 text-amber-700",
   PendingReview: "bg-blue-100 text-blue-700",
   Approved: "bg-emerald-100 text-emerald-700",
-  RevisionRequested: "bg-red-100 text-red-700",
+  NeedsRequested: "bg-red-100 text-red-700",
   Superseded: "bg-neutral-200 text-neutral-600",
 };
  
@@ -52,7 +52,7 @@ const statusLabels: Record<PlanVersionStatus, string> = {
   Draft: "Draft",
   PendingReview: "Pending review",
   Approved: "Approved",
-  RevisionRequested: "Revision requested",
+  NeedsRequested: "Needs requested",
   Superseded: "Superseded",
 };
  
@@ -400,9 +400,9 @@ interface VersionDetailPanelProps {
  
 function VersionDetailPanel({ detail }: VersionDetailPanelProps) {
   // Advisor feedback only renders for versions that actually went through
-  // review — matches the "Approved" / "RevisionRequested" data contract.
+  // review — matches the "Approved" / "NeedsRequested" data contract.
   const showFeedback =
-    (detail.status === "Approved" || detail.status === "RevisionRequested") &&
+    (detail.status === "Approved" || detail.status === "NeedsRequested") &&
     detail.feedback;
  
   const totalCredits = detail.courses.reduce((sum, c) => sum + c.credits, 0);
@@ -464,7 +464,7 @@ function VersionDetailPanel({ detail }: VersionDetailPanelProps) {
           <div
             className={cn(
               "font-patrick-hand flex flex-col gap-2 rounded-md p-5 text-lg text-neutral-900 shadow-lg",
-              detail.status === "RevisionRequested" ? "bg-[#FADCE0]" : "bg-[#7ADB6E]",
+              detail.status === "NeedsRequested" ? "bg-[#FADCE0]" : "bg-[#7ADB6E]",
               "rotate-1",
             )}
           >

@@ -48,6 +48,20 @@ class ProfileService:
                 detail="Program track does not exist.",
             )
 
+        if not (
+            track.min_credits_per_term
+            <= data.target_credit_load
+            <= track.max_credits_per_term
+        ):
+            raise HTTPException(
+                status_code=422,
+                detail=(
+                    "Target credit load must be between "
+                    f"{track.min_credits_per_term} and "
+                    f"{track.max_credits_per_term} credits."
+                ),
+            )
+
         program = curricula.get_program(data.program_id)
 
         if program is None:

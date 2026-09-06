@@ -7,9 +7,9 @@ import arrowDoodle from "../assets/Arrow 1.svg";
 
 /** Stage 1: what the person tells the plan-generator agent. */
 export interface StudyPlanIntent {
-  /** Which semester the generated plan should target, e.g. 1–8. */
+  /** Current programme semester loaded from the student's profile. */
   preferredSemester: number;
-  /** Desired credit load for that semester, e.g. 12–21. */
+  /** Desired credit load for that semester, e.g. 14–25. */
   targetCredits: number;
   /** Free-text guidance passed straight through to the generator. */
   noteToAgent: string;
@@ -299,11 +299,11 @@ export default function StudyPlan({
   }
 
   const semesterOptions = useMemo(
-    () => Array.from({ length: 8 }, (_, i) => i + 1),
+    () => Array.from({ length: 9 }, (_, i) => i + 1),
     [],
   );
   const creditOptions = useMemo(
-    () => Array.from({ length: 10 }, (_, i) => 12 + i),
+    () => Array.from({ length: 11 }, (_, i) => 14 + i),
     [],
   );
 
@@ -419,14 +419,14 @@ function IntentPanel({
           htmlFor="preferred-semester"
           className="font-patrick-hand text-xl leading-tight"
         >
-          Preferred
+          Current
           <br />
           semester
         </label>
         <select
           id="preferred-semester"
           value={intent.preferredSemester}
-          onChange={(e) => onSemesterChange(Number(e.target.value))}
+          disabled
           className="w-20 rounded-full bg-white px-3 py-1.5 text-center text-neutral-900 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
         >
           {semesterOptions.map((s) => (

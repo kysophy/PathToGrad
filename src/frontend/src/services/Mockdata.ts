@@ -29,7 +29,7 @@ export const MOCK_VERSIONS: PlanVersionSummary[] = [
     versionId: "v2",
     versionNumber: 2,
     createdAt: "2026-06-18T14:40:00Z",
-    status: "RevisionRequested",
+    status: "NeedsRequested",
     courseSummary: "Linear Algebra I, Discrete Mathematics",
   },
   {
@@ -69,7 +69,7 @@ export const MOCK_VERSION_DETAILS: Record<string, PlanVersionDetail> = {
     versionId: "v2",
     versionNumber: 2,
     createdAt: "2026-06-18T14:40:00Z",
-    status: "RevisionRequested",
+    status: "NeedsRequested",
     courseSummary: "Linear Algebra I, Discrete Mathematics",
     courses: [
       { code: "24C07", name: "Linear Algebra I", credits: 3 },

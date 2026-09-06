@@ -6,6 +6,7 @@ Greedy fill: Assigned → Backlog (oldest first) → Elective (soft-lock top-up)
 
 from __future__ import annotations
 
+from app.deterministic.retakes import rank_retakes
 from app.deterministic.cadence import is_offered_in
 from app.deterministic.catalog import get_course_catalog
 from app.deterministic.conflicts import detect_conflicts
@@ -141,14 +142,22 @@ def generate_semester_plan(
             item.course_code,
         )
     )
-    retakes = sorted(
-        [
-            course
-            for course in catalog.courses
-            if course.primary_status == CoursePrimaryStatus.RETAKE
-        ],
-        key=lambda item: item.course_code,
-    )
+    retake_courses = {
+        course.course_id: course
+        for course in catalog.courses
+        if course.primary_status == CoursePrimaryStatus.RETAKE
+    }
+
+    retakes = [
+        retake_courses[candidate.course_id]
+        for candidate in rank_retakes(
+            student_id,
+            term_id,
+            repos=repos,
+        )
+        if candidate.eligible
+        and candidate.course_id in retake_courses
+    ]
 
     items: list[PlanItem] = []
     exclusions: list[PlanExclusion] = []
@@ -267,11 +276,20 @@ def generate_semester_plan(
 
         if request.include_retakes:
             for course in retakes:
+                # Target credit load is a soft planning goal.
+                # Once both the target load and minimum course count are satisfied,
+                # optional improvement retakes should no longer be added.
+                if total() >= fill_goal and count() >= min_courses:
+                    break
+
+                # University hard limits must never be exceeded.
                 if count() >= max_courses or total() >= max_credits:
                     break
+
                 if total() + course.credits > max_credits:
                     exclude(course, ExclusionReason.DEFERRED_CREDIT_CAP)
                     continue
+
                 try_place(course, ignore_cap=False)
 
     timetable: list[TimetableSlot] = []

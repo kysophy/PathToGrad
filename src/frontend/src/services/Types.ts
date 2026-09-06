@@ -13,7 +13,7 @@ export type PlanVersionStatus =
   | "Draft"
   | "PendingReview"
   | "Approved"
-  | "RevisionRequested"
+  | "NeedsRequested"
   | "Superseded";
 
 export interface PlanVersionCourse {
@@ -41,7 +41,7 @@ export interface AdvisorFeedback {
   decisionDate: string; // ISO 8601
   /**
    * Required by the backend whenever the parent version's status is
-   * "RevisionRequested"; optional (may be an empty string) when
+   * "NeedsRequested"; optional (may be an empty string) when
    * "Approved". The UI does not re-validate this — it trusts the API
    * contract — but always renders the field when present.
    */
@@ -55,7 +55,7 @@ export interface AdvisorFeedback {
  */
 export interface PlanVersionDetail extends PlanVersionSummary {
   courses: PlanVersionCourse[];
-  /** Present only when status is "Approved" or "RevisionRequested". */
+  /** Present only when status is "Approved" or "NeedsRequested". */
   feedback?: AdvisorFeedback;
 }
 
