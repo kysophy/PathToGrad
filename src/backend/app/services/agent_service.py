@@ -50,7 +50,18 @@ _PLAN_WORDS = (
     "this term",
     "this semester",
 )
-_RISK_WORDS = ("risk", "gpa", "fail", "backlog", "danger", "warning")
+_RISK_WORDS = (
+    "risk",
+    "gpa",
+    "fail",
+    "backlog",
+    "danger",
+    "warning",
+    "heavy",
+    "load",
+    "too much",
+    "manageable",
+)
 _GREET_RE = re.compile(r"^\s*(hi|hello|hey|yo)\b", re.IGNORECASE)
 
 
@@ -120,6 +131,7 @@ class AgentService:
         target_credit_load: int | None = None,
         include_retakes: bool = True,
         note: str | None = None,
+        question: str | None = None,
     ) -> ExplainedPlanResponse:
         started = time.perf_counter()
         term_id = term_id or self.settings.DEFAULT_TERM_ID
@@ -147,7 +159,11 @@ class AgentService:
         names_en = {row.course_code: row.name_en for row in catalog.courses}
         names_vi = {row.course_code: row.name_vi for row in catalog.courses}
         explanation, source, stage3_mode = self._explain(
-            plan, risks, names_en=names_en, names_vi=names_vi
+            plan,
+            risks,
+            names_en=names_en,
+            names_vi=names_vi,
+            question=question,
         )
 
         run_id = self._log(
@@ -232,15 +248,21 @@ class AgentService:
                     "I still will not register you."
                 )
             else:
-                explained = self.generate_plan(student_id, term_id)
+                explained = self.generate_plan(
+                    student_id, term_id, note=message, question=message
+                )
                 reply = explained.explanation
                 if intent == "risk" and explained.risks:
-                    extra = "\n".join(
-                        f"{risk.code.value}: {risk.message}"
+                    unmentioned = [
+                        risk
                         for risk in explained.risks
-                    )
-                    if extra not in reply:
-                        reply = reply + "\n" + extra
+                        if risk.code.value not in reply
+                    ]
+                    if unmentioned:
+                        reply = reply + "\n" + "\n".join(
+                            f"{risk.code.value}: {risk.message}"
+                            for risk in unmentioned
+                        )
                 used_template = explained.explanation_source == "template"
                 mode = (
                     GenerationMode.LLM
@@ -307,6 +329,7 @@ class AgentService:
         *,
         names_en: dict[str, str] | None = None,
         names_vi: dict[str, str] | None = None,
+        question: str | None = None,
     ) -> tuple[str, str, GenerationMode]:
         template = templates.explain_plan(
             plan, risks, names_en=names_en, names_vi=names_vi
@@ -322,9 +345,13 @@ class AgentService:
             "warnings": plan.warnings,
             "risks": [risk.model_dump(mode="json") for risk in risks],
         }
-        prompt = prompts.EXPLAIN_PROMPT.format(
-            plan_json=json.dumps(payload, ensure_ascii=False)
-        )
+        plan_json = json.dumps(payload, ensure_ascii=False)
+        if question and question.strip():
+            prompt = prompts.PLAN_QA_PROMPT.format(
+                plan_json=plan_json, question=question.strip()
+            )
+        else:
+            prompt = prompts.EXPLAIN_PROMPT.format(plan_json=plan_json)
         try:
             prose = self.provider.generate(prompt, prompts.SYSTEM_PROMPT)
         except (ProviderError, ProviderUnavailable):

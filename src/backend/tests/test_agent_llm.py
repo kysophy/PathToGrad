@@ -143,6 +143,48 @@ def test_chat_known_course_uses_template_without_key():
     assert reply.used_template is True
 
 
+def test_workload_question_is_risk_intent():
+    assert classify_message("How heavy is my plan?") == "risk"
+    assert classify_message("Is this load too much for me?") == "risk"
+    assert classify_message("Is my workload manageable?") == "risk"
+
+
+def test_chat_plan_question_reaches_the_model():
+    seen: list[str] = []
+
+    def echo(prompt, _system=None):
+        seen.append(prompt)
+        if "Extract JSON" in prompt:
+            return '{"target_credit_load": 18, "include_retakes": true}'
+        return "Your plan is 18 credits, so CSC10004 sets the pace."
+
+    service = AgentService(
+        repos=_repos(),
+        provider=LLMProviderAdapter(api_key="fake", generate_fn=echo),
+    )
+    reply = service.chat("How heavy is my plan?", student_id="S1", term_id=TERM)
+    assert reply.intent == "risk"
+    assert reply.used_template is False
+    qa_prompts = [p for p in seen if "Student question:" in p]
+    assert qa_prompts, "the question was dropped before Stage 3"
+    assert "How heavy is my plan?" in qa_prompts[0]
+
+
+def test_chat_plan_question_still_guarded():
+    def liar(prompt, _system=None):
+        if "Extract JSON" in prompt:
+            return '{"target_credit_load": 18, "include_retakes": true}'
+        return "Your load is light, so add CSC99999 too."
+
+    service = AgentService(
+        repos=_repos(),
+        provider=LLMProviderAdapter(api_key="fake", generate_fn=liar),
+    )
+    reply = service.chat("How heavy is my plan?", student_id="S1", term_id=TERM)
+    assert reply.used_template is True
+    assert "CSC99999" not in reply.reply
+
+
 def test_weather_is_refuse_with_no_course_codes():
     assert classify_message("what is the weather") == "refuse"
     service = AgentService(

@@ -167,7 +167,7 @@ The LLM explains a plan; it does not write the plan. Stage 2 (`app/deterministic
 - Templates + NFR-06 guard ship with an empty `GEMINI_API_KEY`. Live Gemini is stretch.
 - Chat v1 = plan, engine risk, course brief, greet, or refuse. No general Q&A. Single-turn POST. No history on the wire.
 - `data/course_briefs.json` is illustrative; every course answer keeps the disclaimer.
-- Model string is `gemini-2.0-flash` in Settings only. One team key, never committed.
+- Model string is `gemini-3.5-flash-lite` in Settings only. One team key, never committed. Revised from `gemini-2.0-flash`, which Google retired (the API answers 404 and names a successor); `gemini-3.6-flash` was measured too slow for a live demo (6–25 s, sometimes a 504), the lite model answers in about 1.5 s.
 - Recommended = Assigned + Backlog. Course names in prose are Vietnamese + (English) as in `Courses.csv`.
 - Chat stays in React state. Study Plan semester dropdown is cosmetic; the engine uses `profile.current_semester` + `TERM-2026-1`.
 - `generation_mode` on a **plan** is always engine `Fallback`. On `agent_run` / chat it means “did Gemini answer?”

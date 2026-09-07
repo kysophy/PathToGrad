@@ -2,11 +2,22 @@
 
 from __future__ import annotations
 
+import importlib.util
 from collections.abc import Callable
+from functools import lru_cache
 
 from app.core.config import get_settings
 
 GenerateFn = Callable[[str, str | None], str]
+
+
+@lru_cache(maxsize=1)
+def sdk_installed() -> bool:
+    """A key without the SDK cannot call anything; report unavailable, not available."""
+    try:
+        return importlib.util.find_spec("google.genai") is not None
+    except (ImportError, ModuleNotFoundError, ValueError):
+        return False
 
 
 class ProviderError(Exception):
@@ -47,7 +58,7 @@ class LLMProviderAdapter:
     def is_available(self) -> bool:
         if self._generate_fn is not None:
             return True
-        return bool(self.api_key)
+        return bool(self.api_key) and sdk_installed()
 
     def generate(self, prompt: str, system: str | None = None) -> str:
         if not self.is_available():

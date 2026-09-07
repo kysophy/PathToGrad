@@ -1,4 +1,4 @@
-# PathToGrad
+﻿# PathToGrad
 
 PathToGrad is a course-planning notebook for FIT@HCMUS students. It keeps an academic profile and transcript, checks prerequisites and graduation progress, shows the term catalog, and drafts a semester plan.
 
@@ -14,7 +14,7 @@ PathToGrad is a course-planning notebook for FIT@HCMUS students. It keeps an aca
 | Course catalog, prerequisites, eligibility | Wired (A-10). Recommended = Assigned + Backlog |
 | Semester plan + risk detector | Wired. `POST /api/agent/plan` always runs the engine |
 | Chat | Wired. `POST /api/agent/chat` is single-turn: plan, course brief, engine risks, greet, or a polite refuse. No general Q&A |
-| Explanations | Templates always. Hosted Gemini (`gemini-2.0-flash`) is optional stretch, then a course-code guard |
+| Explanations | Templates always. Hosted Gemini (`gemini-3.5-flash-lite`) is optional stretch, then a course-code guard |
 | Demo students | Five `DEMO-*` personas in `src/database/seed_demo_students.sql` |
 | Login / roles | UI cheat aliases only. No `/api/auth/login` |
 | Save draft, submit, plan history | UI only. No HTTP yet |
@@ -76,7 +76,7 @@ If `Activate.ps1` is blocked: `Set-ExecutionPolicy -Scope CurrentUser RemoteSign
 ```
 DATABASE_URL=mysql+pymysql://root:pathtograd@localhost:3306/pathtograd
 GEMINI_API_KEY=
-GEMINI_MODEL=gemini-2.0-flash
+GEMINI_MODEL=gemini-3.5-flash-lite
 DEFAULT_TERM_ID=TERM-2026-1
 ```
 
@@ -172,7 +172,7 @@ Password is anything. None of these call `/api/auth/login`. Any id **not** in th
 The demo must work with an empty key. A [Google AI Studio API key](https://aistudio.google.com/docs/api-key) only changes Stage 3 from **Template explanation** to **Gemini explanation** when the guard accepts the prose.
 
 1. Create a key at [https://aistudio.google.com/apikey](https://aistudio.google.com/apikey). Google AI Pro is not this key.
-2. Put it in `src/backend/.env` as `GEMINI_API_KEY=...` (no quotes). Keep `GEMINI_MODEL=gemini-2.0-flash`.
+2. Put it in `src/backend/.env` as `GEMINI_API_KEY=...` (no quotes). Keep `GEMINI_MODEL=gemini-3.5-flash-lite`.
 3. **Restart uvicorn.** Settings are cached at process start.
 4. Log in as `s02` → Study Plan → Generate. If Gemini times out or invents a code, you still get an engine plan and templates.
 

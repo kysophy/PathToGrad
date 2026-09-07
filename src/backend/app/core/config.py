@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     )
 
     GEMINI_API_KEY: str = ""
-    GEMINI_MODEL: str = "gemini-2.0-flash"
+    GEMINI_MODEL: str = "gemini-3.5-flash-lite"
     GEMINI_TIMEOUT_MS: int = 20000
     DEFAULT_TERM_ID: str = "TERM-2026-1"
 

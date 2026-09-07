@@ -44,6 +44,21 @@ Plan JSON:
 {plan_json}
 """
 
+PLAN_QA_PROMPT = """Answer the student's question about this verified plan.
+
+Use only course codes that appear in items, exclusions, or risks below.
+Ground every claim in the JSON: credits, selection_reason, exclusion reason, risk message.
+For workload questions use total_credits and course_count, and the limits named in warnings or risks.
+If the JSON does not answer the question, say so instead of guessing.
+Do not add new courses. Do not tell the student they are registered.
+
+Plan JSON:
+{plan_json}
+
+Student question:
+{question}
+"""
+
 COURSE_QA_PROMPT = """Answer the student's question about this catalog course.
 
 Use only the facts below. If the brief is missing, say we do not have a description.
